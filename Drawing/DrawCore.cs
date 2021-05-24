@@ -22,6 +22,7 @@ namespace LevelRedactor.Drawing
         private Point CursorPoint;
         private Figure currentFigure;
         private Primitive currentPrimitive;
+        private Action action;
         private ObservableCollection<Figure> figures = new();
 
         public Canvas Canvas { get; init; }
@@ -43,7 +44,15 @@ namespace LevelRedactor.Drawing
                 OnPropertyChanged("CurrentPrimitive");
             }
         }
-        public Action Action { get; set; }
+        public Action Action 
+        {
+            get => action;
+            set
+            {
+                action = value;
+                OnPropertyChanged("Action");
+            }
+        }
         public ObservableCollection<Figure> Figures { get => figures; private set => figures = value; }
 
         public DrawCore(Canvas canvas)

@@ -10,16 +10,16 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="768" Width="1366">
 
-    <Grid>
+    <Grid x:Name="mainGrid">
         <Grid.RowDefinitions>
             <RowDefinition Height="25"/>
             <RowDefinition Height="30"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="300"/>
         </Grid.ColumnDefinitions>
 
         <Menu Grid.ColumnSpan="3">
@@ -128,7 +128,8 @@
                               Width="50"
                               Background="Transparent"
                               Margin="2, 10, 0, 0"
-                              Name="fillColorPicker"/>
+                              Name="fillColorPicker"
+                              SelectedColor="{Binding Path=Action.Context.FillColor}"/>
 
             <Border Grid.Row="3" Grid.ColumnSpan="3"
                     HorizontalAlignment="Stretch"
@@ -160,7 +161,8 @@
                               Width="50"
                               Background="Transparent"
                               Margin="2, 10, 0, 0"
-                              Name="borderColorPicker"/>
+                              Name="borderColorPicker"
+                              SelectedColor="{Binding Path=Action.Context.BorderColor}"/>
             
             <TextBlock Grid.Row="5"
                        Text="Ширина:"
@@ -171,7 +173,8 @@
                                 Maximum="100"
                                 MaxLength="3"
                                 Margin="2, 10, 0, 0"
-                                Name="borderWidthNumeric"/>
+                                Name="borderWidthNumeric"
+                                Value="{Binding Path=Action.Context.BorderWidth}"/>
             
             <Border Grid.Row="6" Grid.ColumnSpan="3"
                     HorizontalAlignment="Stretch"
@@ -193,9 +196,15 @@
                        HorizontalAlignment="Right"
                        VerticalAlignment="Center"
                        FontSize="16"
-                       Text="100X100"
-                       Margin="2, 10, 0, 0"/>
-            
+                       Margin="2, 10, 0, 0">
+                <TextBlock.Text>
+                    <MultiBinding StringFormat="{}{0}X{1}">
+                        <Binding Path="CurrentPrimitive.GeometryDrawing.Bounds.Width"/>
+                        <Binding Path="CurrentPrimitive.GeometryDrawing.Bounds.Height"/>
+                    </MultiBinding>
+                </TextBlock.Text>
+            </TextBlock>
+
             <TextBlock Grid.Row="8"
                        Text="Координаты:"
                        FontSize="16"
@@ -204,9 +213,15 @@
                        HorizontalAlignment="Right"
                        VerticalAlignment="Center"
                        FontSize="16"
-                       Text="100X100"
-                       Margin="2, 10, 0, 0"/>
-            
+                       Margin="2, 10, 0, 0">
+                <TextBlock.Text>
+                    <MultiBinding StringFormat="{}{0}X{1}">
+                        <Binding Path="CurrentPrimitive.GeometryDrawing.Bounds.Left"/>
+                        <Binding Path="CurrentPrimitive.GeometryDrawing.Bounds.Top"/>
+                    </MultiBinding>
+                </TextBlock.Text>
+            </TextBlock>
+
             <TextBlock Grid.Row="9"
                        Text="Поворот:"
                        FontSize="16"
@@ -238,7 +253,6 @@
             <TextBox Grid.Row="11" Grid.Column="1" Grid.ColumnSpan="2"
                      Name="figureTitleTextBox"
                      MinWidth="100"
-                     MaxLength="10"
                      HorizontalAlignment="Stretch"
                      HorizontalContentAlignment="Right"
                      MaxLines="1"
@@ -336,7 +350,7 @@
         <Border Grid.Column="0" Grid.Row="2"
                 BorderBrush="Black"
                 BorderThickness="0, 1, 1, 1">
-            <TreeView x:Name="treeView">
+            <TreeView x:Name="treeView" MaxWidth="200" Width="200">
                 <TreeView.ItemTemplate>
                     <HierarchicalDataTemplate ItemsSource="{Binding Path=Primitives}">
                         <StackPanel Orientation="Horizontal">

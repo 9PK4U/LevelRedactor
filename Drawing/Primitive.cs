@@ -1,5 +1,7 @@
 ﻿using LevelRedactor.Parser.Models;
 using System;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Media;
 
@@ -58,7 +60,5 @@ namespace LevelRedactor.Drawing
         {
             return new Primitive() { Type = Type, GeometryDrawing = GeometryDrawing.Clone() };
         }
-
-
     }
 }
