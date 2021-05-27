@@ -29,7 +29,7 @@
             <MenuItem Header="Справка"/>
         </Menu>
 
-        <ToolBar Grid.Row="1" Grid.ColumnSpan="3">
+        <ToolBar Grid.Row="1" Grid.ColumnSpan="3" x:Name="toolBar">
             <Button x:Name="arrowButton" ToolTip="Выбор фигуры">
                 <Image Source="Resources/cursor-icon.png" Width="24"/>
             </Button>
@@ -41,6 +41,9 @@
             </Button>
             <Button x:Name="linkButton" ToolTip="Связать">
                 <Image Source="Resources/link-icon.png" Width="24"/>
+            </Button>
+            <Button x:Name="divorceButton" ToolTip="Отсоединить" Content="Олег пидорас">
+
             </Button>
             <Separator/>
             <Button x:Name="ellipseButton">
@@ -198,7 +201,7 @@
                        FontSize="16"
                        Margin="2, 10, 0, 0">
                 <TextBlock.Text>
-                    <MultiBinding StringFormat="{}{0}X{1}">
+                    <MultiBinding StringFormat="{}{0:F0}X{1:F0}">
                         <Binding Path="CurrentPrimitive.GeometryDrawing.Bounds.Width"/>
                         <Binding Path="CurrentPrimitive.GeometryDrawing.Bounds.Height"/>
                     </MultiBinding>
@@ -215,7 +218,7 @@
                        FontSize="16"
                        Margin="2, 10, 0, 0">
                 <TextBlock.Text>
-                    <MultiBinding StringFormat="{}{0}X{1}">
+                    <MultiBinding StringFormat="{}{0:F0}X{1:F0}">
                         <Binding Path="CurrentPrimitive.GeometryDrawing.Bounds.Left"/>
                         <Binding Path="CurrentPrimitive.GeometryDrawing.Bounds.Top"/>
                     </MultiBinding>
@@ -230,7 +233,9 @@
                                 Minimum="0"
                                 Maximum="100"
                                 MaxLength="3"
-                                Margin="2, 10, 0, 0"/>
+                                Margin="2, 10, 0, 0"
+                                x:Name="primitiveAngleNumeric"
+                                Value="{Binding Path=CurrentPrimitive.Angle}"/>
             
             <StackPanel Grid.Row="10" Grid.ColumnSpan="3" >
                 <Separator Margin="0, 25, 0, 0" BorderThickness="5" BorderBrush="Black"/>
@@ -302,7 +307,7 @@
                        FontSize="16"
                        Margin="2, 10, 0, 0">
                 <TextBlock.Text>
-                    <MultiBinding StringFormat="{}{0}X{1}">
+                    <MultiBinding StringFormat="{}{0:F0}X{1:F0}">
                         <Binding Path="CurrentFigure.ActualWidth"/>
                         <Binding Path="CurrentFigure.ActualHeight"/>
                     </MultiBinding>
@@ -319,7 +324,7 @@
                        FontSize="16"
                        Margin="2, 10, 0, 0">
                 <TextBlock.Text>
-                    <MultiBinding StringFormat="{}{0}X{1}">
+                    <MultiBinding StringFormat="{}{0:F0}X{1:F0}">
                         <Binding Path="CurrentFigure.DrawPoint.X"/>
                         <Binding Path="CurrentFigure.DrawPoint.Y"/>
                     </MultiBinding>

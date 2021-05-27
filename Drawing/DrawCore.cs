@@ -17,6 +17,8 @@ namespace LevelRedactor.Drawing
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
+        private bool IsDrawing = false;
+
         private int lastZIndex;
         private Point lastPosition;
         private Point CursorPoint;
@@ -70,10 +72,27 @@ namespace LevelRedactor.Drawing
         {
             Point currentPoint = e.GetPosition(Canvas);
 
+            if (e.ClickCount == 2 && Action.Type == ActionTypes.Draw && Action.DrawingType == DrawingType.Polygon)
+            {
+                CurrentFigure.DrawPoint = CurrentFigure.Primitives[0].GeometryDrawing.Bounds.TopLeft;
+                figures.Add(CurrentFigure);
+                CurrentPrimitive = CurrentFigure.Primitives[0];
+                Action.Type = ActionTypes.Move;
+                IsDrawing = false;
+            }
+
             switch (Action.Type)
             {
                 case ActionTypes.Draw:
-                    Draw(currentPoint);
+                    if (Action.DrawingType != DrawingType.Polygon)
+                    {
+                        Draw(currentPoint);
+                        return;
+                    }
+                    if (Action.DrawingType == DrawingType.Polygon && IsDrawing == false)
+                        DrawPoly(currentPoint);
+                    else
+                        DrawPoly(currentPoint, false);
                     break;
                 case ActionTypes.Move:
                     if ((CurrentFigure = GetFigure(currentPoint)) != null)
@@ -109,7 +128,7 @@ namespace LevelRedactor.Drawing
                     break;
                 case ActionTypes.Move:
                     if (CurrentFigure != null && e.LeftButton == MouseButtonState.Pressed)
-                        Move(currentPoint);
+                        MoveFigure(currentPoint);
                     break;
                 case ActionTypes.Resize:
                     break;
@@ -125,20 +144,21 @@ namespace LevelRedactor.Drawing
         }
         private void Canvas_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
+            
             switch (Action.Type)
             {
                 case ActionTypes.Draw:
-                    CurrentFigure.DrawPoint = CurrentFigure.Primitives[0].GeometryDrawing.Bounds.TopLeft;
-                    figures.Add(CurrentFigure);
+                    if (Action.DrawingType != DrawingType.Polygon)
+                    {
+                        CurrentFigure.DrawPoint = CurrentFigure.Primitives[0].GeometryDrawing.Bounds.TopLeft;
+                        figures.Add(CurrentFigure);
+                        CurrentPrimitive = CurrentFigure.Primitives[0];
+                        Action.Type = ActionTypes.Move;
+                    }
                     break;
                 case ActionTypes.Move:
                     if (CurrentFigure != null)
-                    {
-                        //Point newDrawPoint = GetDrawPoint();
-                        //MakeNewPrimitive(newDrawPoint);
-                        MakeNewPrimitive(CurrentFigure.DrawPoint);
-                        //CurrentFigure.DrawPoint = newDrawPoint;
-                    }
+                        PrimitiveBuilder.MakeNewPrimitives(CurrentFigure, lastPosition);
                     break;
                 case ActionTypes.Resize:
                     break;
@@ -152,6 +172,7 @@ namespace LevelRedactor.Drawing
                     break;
             }
         }
+        
         private void Draw(Point point, bool isBegin = true)
         { 
             if (isBegin)
@@ -174,6 +195,7 @@ namespace LevelRedactor.Drawing
 
                 Canvas.SetTop(CurrentFigure, point.Y);
                 Canvas.SetLeft(CurrentFigure, point.X);
+
             }
             else
             {
@@ -182,7 +204,7 @@ namespace LevelRedactor.Drawing
                     case DrawingType.Rect:
                         CurrentFigure.Primitives[0].Type = "Прямоугольник";
                         CurrentFigure.Primitives[0].GeometryDrawing.Geometry =
-                            new RectangleGeometry(MakeRightRect(CurrentFigure.DrawPoint, point));
+                            new RectangleGeometry(PrimitiveBuilder.MakeRightRect(CurrentFigure.DrawPoint, point));
                         break;
                     case DrawingType.Line:
                         CurrentFigure.Primitives[0].Type = "Линия";
@@ -192,12 +214,12 @@ namespace LevelRedactor.Drawing
                     case DrawingType.Ellipse:
                         CurrentFigure.Primitives[0].Type = "Овал";
                         CurrentFigure.Primitives[0].GeometryDrawing.Geometry =
-                            new EllipseGeometry(MakeRightRect(CurrentFigure.DrawPoint, point));
+                            new EllipseGeometry(PrimitiveBuilder.MakeRightRect(CurrentFigure.DrawPoint, point));
                         break;
                     case DrawingType.Triengle:
                         CurrentFigure.Primitives[0].Type = "Треугольник";
                         CurrentFigure.Primitives[0].GeometryDrawing.Geometry =
-                            MakeRightTriangle(CurrentFigure.DrawPoint, point);
+                            PrimitiveBuilder.MakeRightTriangle(CurrentFigure.DrawPoint, point);
                         break;
                     default:
                         break;
@@ -209,7 +231,45 @@ namespace LevelRedactor.Drawing
             }
             
         }
-        private void Move(Point point)
+        private void DrawPoly(Point point, bool isBegin = true)
+        {
+            if (isBegin)
+            {
+                CurrentFigure = new Figure
+                {
+                    DrawPoint = point,
+                    ZIndex = lastZIndex++
+                };
+                CurrentFigure.Primitives.Add(new Primitive()
+                {
+                    GeometryDrawing = new GeometryDrawing
+                    {
+                        Brush = new SolidColorBrush(Action.Context.FillColor),
+                        Pen = new Pen(new SolidColorBrush(Action.Context.BorderColor), Action.Context.BorderWidth)
+                    }
+                });
+
+                CurrentFigure.Primitives[0].Type = "Полигон";
+                PathFigure pf = new() { StartPoint = CurrentFigure.DrawPoint, IsClosed = true };
+                CurrentFigure.Primitives[0].GeometryDrawing.Geometry = new PathGeometry();
+                ((PathGeometry)CurrentFigure.Primitives[0].GeometryDrawing.Geometry).Figures.Add(pf);
+
+                Canvas.Children.Add(CurrentFigure);
+
+                Canvas.SetTop(CurrentFigure, point.Y);
+                Canvas.SetLeft(CurrentFigure, point.X);
+
+                IsDrawing = true;
+            }
+            else
+            {
+                PrimitiveBuilder.AddSegment(CurrentFigure.Primitives[0], point);
+                Canvas.SetLeft(CurrentFigure, CurrentFigure.Primitives[0].GeometryDrawing.Bounds.Left);
+                Canvas.SetTop(CurrentFigure, CurrentFigure.Primitives[0].GeometryDrawing.Bounds.Top);
+            }
+
+        }
+        private void MoveFigure(Point point)
         {
             double width = CurrentFigure.ActualWidth;
             double height = CurrentFigure.ActualHeight;
@@ -230,7 +290,6 @@ namespace LevelRedactor.Drawing
         {
             if (GetFigure(point) is Figure temp && temp != currentFigure && temp != null && currentFigure != null)
             {
-
                 foreach (Primitive primitive in currentFigure.Primitives)
                 {
                     temp.Primitives.Add(primitive);
@@ -265,6 +324,7 @@ namespace LevelRedactor.Drawing
                 Canvas.SetTop(temp, newFigurePos.Y);
 
                 currentFigure = temp;
+
             }
             else
             {
@@ -273,90 +333,46 @@ namespace LevelRedactor.Drawing
         }
         private void LinkFigures(Point point)
         {
+            //CurrentPrimitive.GeometryDrawing.Geometry.Transform = new RotateTransform()
+            //if (GetFigure(currentPoint) is Figure temp && temp != null && currentFigure != null && temp != currentFigure)
+            //{
+            //    if (currentFigure.MajorFigureId == temp.Id || temp.MajorFigureId == currentFigure.Id)
+            //    {
+            //        MessageBox.Show("Эти фигуры уже связаны", "Действие невозможно", MessageBoxButton.OK);
+            //        currentAction = ActionTypes.None;
+            //        return;
+            //    }
+
+            //    currentFigure.MajorFigureId = temp.Id;
+
+            //    temp.AnchorFiguresId.Add(currentFigure.Id);
+
+            //    currentFigure.AnchorPoint = new(temp.DrawPoint.X - currentFigure.DrawPoint.X,
+            //                                    temp.DrawPoint.Y - currentFigure.DrawPoint.Y);
+            //}
+            //else
+            //{
+            //    MessageBox.Show("Действие невозможно");
+            //}
 
         }
-
-        private static Rect MakeRightRect(Point p1, Point p2)
+        public void Divorce()
         {
-            if (p1.X < p2.X)
+            if (CurrentPrimitive != null)
             {
-                if (p1.Y > p2.Y)
-                    return new Rect(p1, p2);
-                else
-                    return new Rect(new Point(p1.X, p2.Y), new Point(p2.X, p1.Y));
-            }
-            else
-            {
-                if (p1.Y > p2.Y)
-                    return new Rect(new Point(p2.X, p1.Y), new Point(p1.X, p2.Y));
-                else
-                    return new Rect(p2, p1);
-            }
-        }
-        private static PathGeometry MakeRightTriangle(Point p1, Point p2)
-        {
-            PathFigure pf_triangle = new();
-            pf_triangle.IsClosed = true;
+                Figure f = new() { ZIndex = ++lastZIndex, DrawPoint = CurrentPrimitive.GeometryDrawing.Bounds.Location };
+                f.Primitives.Add(CurrentPrimitive);
+                CurrentFigure.Primitives.Remove(CurrentPrimitive);
+                figures.Add(f);
+                Canvas.Children.Add(f);
+                CurrentFigure = f;
 
-            Rect rect = MakeRightRect(p1, p2);
-
-            Point tr_point = rect.TopLeft;
-            tr_point.X += rect.Width / 2;
-
-            pf_triangle.StartPoint = rect.BottomLeft;
-            pf_triangle.Segments.Add(new LineSegment(rect.BottomRight, true));
-            pf_triangle.Segments.Add(new LineSegment(tr_point, true));
-
-            PathGeometry triangle = new();
-            triangle.Figures.Add(pf_triangle);
-
-            return triangle;
-        }
-        private void MakeNewPrimitive(Point currentPoint)
-        {
-            double differenceX = (currentPoint.X - lastPosition.X);
-            double differenceY = (currentPoint.Y - lastPosition.Y);
-
-            foreach (Primitive primitive in CurrentFigure.Primitives)
-            {
-                if (primitive.GeometryDrawing.Geometry is RectangleGeometry rectangle)
-                {
-                    double newX = rectangle.Rect.Left + differenceX;
-                    double newY = rectangle.Rect.Top + differenceY;
-                    primitive.GeometryDrawing.Geometry =
-                        new RectangleGeometry(new Rect(newX, newY,
-                        rectangle.Rect.Width, rectangle.Rect.Height));
-                }
-                if (primitive.GeometryDrawing.Geometry is LineGeometry line)
-                {
-                    Point newStartPoint = new(line.StartPoint.X + differenceX,
-                        line.StartPoint.Y + differenceY);
-                    Point newEndPoint = new(line.EndPoint.X + differenceX,
-                        line.EndPoint.Y + differenceY);
-
-                    primitive.GeometryDrawing.Geometry = new LineGeometry(newStartPoint, newEndPoint);
-                }
-                if (primitive.GeometryDrawing.Geometry is EllipseGeometry ellipse)
-                {
-                    double newX = ellipse.Bounds.Left + differenceX;
-                    double newY = ellipse.Bounds.Top + differenceY;
-
-                    Rect newRect = new(newX, newY, ellipse.Bounds.Width, ellipse.Bounds.Height);
-
-                    primitive.GeometryDrawing.Geometry = new EllipseGeometry(newRect);
-                }
-                if (primitive.GeometryDrawing.Geometry is PathGeometry triengle)
-                {
-                    double newX = triengle.Bounds.Left + differenceX;
-                    double newY = triengle.Bounds.Top + differenceY;
-
-                    Point point1 = new(newX, newY);
-                    Point point2 = new(newX + triengle.Bounds.Width, newY + triengle.Bounds.Height);
-
-                    primitive.GeometryDrawing.Geometry = MakeRightTriangle(point1, point2);
-                }
+                Canvas.SetLeft(CurrentFigure, CurrentFigure.DrawPoint.X);
+                Canvas.SetTop(CurrentFigure, CurrentFigure.DrawPoint.Y);
+                Canvas.SetZIndex(CurrentFigure, CurrentFigure.ZIndex);
             }
         }
+        
         private Figure GetFigure(in Point point)
         {
             if (VisualTreeHelper.HitTest(Canvas, point) is var hit && hit == null || hit.VisualHit == Canvas)
@@ -379,11 +395,18 @@ namespace LevelRedactor.Drawing
             for (int i = currentFigure.Primitives.Count - 1; i >= 0; i--)
             {
                 if (currentFigure.Primitives[i].GeometryDrawing.Geometry.FillContains(point))
+                {
+                    Action.Context.FillColor = ((SolidColorBrush)currentFigure.Primitives[i].GeometryDrawing.Brush).Color;
+                    Action.Context.BorderColor = ((SolidColorBrush)currentFigure.Primitives[i].GeometryDrawing.Pen.Brush).Color;
+                    Action.Context.BorderWidth = (int)currentFigure.Primitives[i].GeometryDrawing.Pen.Thickness;
+
                     return currentFigure.Primitives[i];
+                }
             }
             
             return null;
         }
+        
         private Point GetDrawPoint() => new(Canvas.GetLeft(CurrentFigure), Canvas.GetTop(CurrentFigure));
         
         public void OnPropertyChanged([CallerMemberName] string prop = "")

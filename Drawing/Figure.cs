@@ -82,13 +82,15 @@ namespace LevelRedactor.Drawing
 
         public Figure() : base()
         {
+            
             id = ++counter;
             Title = "Фигура_" + id;
             Child = new Image() { Stretch = Stretch.Fill };
             AnchorFiguresId = new List<int>();
             Primitives = new ObservableCollection<Primitive>();
 
-            
+            //BorderBrush = Brushes.Black;
+            //BorderThickness = new Thickness(2);
 
             Primitives.CollectionChanged += (s, e) =>
             {
@@ -100,7 +102,7 @@ namespace LevelRedactor.Drawing
                         drawingGroup.Children.Add(primitive.GeometryDrawing);
                     }
 
-                    ((Image)this.Child).Source = new DrawingImage(drawingGroup);
+                    ((Image)Child).Source = new DrawingImage(drawingGroup);
 
                 }
             };

@@ -15,14 +15,16 @@ namespace LevelRedactor.Drawing
         Resize,
         Unit,
         Link,
-        Choice
+        Choice,
     }
     public enum DrawingType
     {
         Rect,
         Ellipse,
         Line,
-        Triengle
+        Triengle,
+        Polygon,
+        Polyline
     }
 
     public class Action : INotifyPropertyChanged

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -28,11 +29,20 @@ namespace LevelRedactor
             DrawCore = new(canvas);
             DataContext = DrawCore;
 
+            //primitiveAngleNumeric.DataContext = DrawCore.CurrentPrimitive.GeometryDrawing.Geometry.Transform as RotateTransform;
 
-            polygonButton.Click += (s, e) =>
-            {
-                treeView.Visibility = Visibility.Collapsed;
-            };
+            //DrawCore.PropertyChanged += (s, e) =>
+            //{
+            //    if (e.PropertyName == "CurrentPrimitive")
+            //    {
+            //        Debug.WriteLine(DrawCore.CurrentPrimitive.GeometryDrawing.Geometry.Transform);
+            //    }
+            //};
+
+            //polygonButton.Click += (s, e) =>
+            //{
+            //    treeView.Visibility = Visibility.Collapsed;
+            //};
             polylineButton.Click += (s, e) =>
             {
                 treeView.Visibility = Visibility.Visible;
@@ -186,12 +196,61 @@ namespace LevelRedactor
         {
             arrowButton.Click += (s, e) => DrawCore.Action.Type = Drawing.ActionTypes.Choice;
             moveButton.Click += (s, e) => DrawCore.Action.Type = Drawing.ActionTypes.Move;
-            ellipseButton.Click += (s, e) => DrawCore.Action = new() { Type = Drawing.ActionTypes.Draw, DrawingType = DrawingType.Ellipse, Context = new() { BorderColor = Colors.Black, FillColor = Colors.Red, BorderWidth = 2 } };
-            rectButton.Click += (s, e) => DrawCore.Action = new() { Type = Drawing.ActionTypes.Draw, DrawingType = DrawingType.Rect, Context = new() { BorderColor = Colors.Black, FillColor = Colors.Green, BorderWidth = 3 } };
-            triangleButton.Click += (s, e) => DrawCore.Action = new() { Type = Drawing.ActionTypes.Draw, DrawingType = DrawingType.Triengle, Context = new() { BorderColor = Colors.Black, FillColor = Colors.Blue, BorderWidth = 4 } };
-            lineButton.Click += (s, e) => DrawCore.Action = new() { Type = Drawing.ActionTypes.Draw, DrawingType = DrawingType.Line, Context = new() { BorderColor = Colors.Black, FillColor = Colors.Yellow, BorderWidth = 5 } };
+            unitButton.Click += (s, e) => DrawCore.Action.Type = Drawing.ActionTypes.Unit;
 
-            unitButton.Click += (s, e) => DrawCore.Action = new() { Type = Drawing.ActionTypes.Unit };
+            ellipseButton.Click += (s, e) =>
+            {
+                DrawCore.Action.Type = ActionTypes.Draw;
+                DrawCore.Action.DrawingType = DrawingType.Ellipse;
+                SetButtonsStyle(s);
+            };
+            rectButton.Click += (s, e) =>
+            {
+                DrawCore.Action.Type = ActionTypes.Draw;
+                DrawCore.Action.DrawingType = DrawingType.Rect;
+                SetButtonsStyle(s);
+            };
+            triangleButton.Click += (s, e) =>
+            {
+                DrawCore.Action.Type = ActionTypes.Draw;
+                DrawCore.Action.DrawingType = DrawingType.Triengle;
+                SetButtonsStyle(s);
+            };
+            lineButton.Click += (s, e) =>
+            {
+                DrawCore.Action.Type = ActionTypes.Draw;
+                DrawCore.Action.DrawingType = DrawingType.Line;
+                SetButtonsStyle(s);
+            };
+
+            polygonButton.Click += (s, e) =>
+            {
+                DrawCore.Action.Type = ActionTypes.Draw;
+                DrawCore.Action.DrawingType = DrawingType.Polygon;
+                SetButtonsStyle(s);
+            };
+
+            divorceButton.Click += (s, e) => 
+            {
+                DrawCore.Divorce();
+            };
+
+            void SetButtonsStyle(object sender)
+            {
+                foreach (var item in toolBar.Items)
+                {
+                    if (item is not Separator)
+                        if (item == sender)
+                        {
+                            ((Button)item).Background = new SolidColorBrush(Color.FromArgb(35, 0, 0, 150));
+                        }
+                        else
+                        {
+                            ((Button)item).Background = Brushes.Transparent;
+                        }
+                }
+            }
+            
             //setMajorFigureButton.Click += (s, e) =>
             //{
             //    if (currentFigure.MajorFigureId == 0)

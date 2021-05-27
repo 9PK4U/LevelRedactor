@@ -1,6 +1,7 @@
 ﻿using LevelRedactor.Parser.Models;
 using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Media;
@@ -8,9 +9,23 @@ using System.Windows.Media;
 
 namespace LevelRedactor.Drawing
 {
-    public class Primitive : ICloneable
+    public class Primitive : ICloneable, INotifyPropertyChanged
     {
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        private int angle = 0;
+
         public string Type { get; set; }
+        public int Angle 
+        {
+            get => angle;
+            set
+            {
+                angle = value;
+                GeometryDrawing.Geometry.Transform = new RotateTransform(value, GeometryDrawing.Geometry.Bounds.Width / 2, GeometryDrawing.Geometry.Bounds.Height / 2);
+                OnPropertyChanged("Angle");
+            }
+        }
         public GeometryDrawing GeometryDrawing { get; set; }
 
         public Primitive(PrimitiveData primitiveData)
@@ -56,9 +71,13 @@ namespace LevelRedactor.Drawing
         public Primitive()
         { }
 
+        public void OnPropertyChanged([CallerMemberName] string prop = "")
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
+        }
         public object Clone()
         {
-            return new Primitive() { Type = Type, GeometryDrawing = GeometryDrawing.Clone() };
+            return new Primitive() { Type = Type, GeometryDrawing = GeometryDrawing.Clone(), Angle = Angle };
         }
     }
 }
