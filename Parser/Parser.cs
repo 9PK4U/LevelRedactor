@@ -9,10 +9,11 @@ namespace LevelRedactor.Parser
 {
     public static class Parser
     {
-        public static string ToJson(string title, IList<Figure> figures)
+        public static string ToJson(string title, string tag, IList<Figure> figures)
         {
             LevelData levelData = new(figures);
             levelData.Title = title;
+            levelData.Tag = tag;
 
             return JsonSerializer.Serialize(levelData);
         }

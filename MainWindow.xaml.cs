@@ -2,11 +2,16 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using LevelRedactor.Drawing;
+using Microsoft.Win32;
+
+using LevelRedactor.Parser;
+using LevelRedactor.Parser.Models;
 
 namespace LevelRedactor
 {
@@ -29,30 +34,15 @@ namespace LevelRedactor
             DrawCore = new(canvas);
             DataContext = DrawCore;
 
-            //primitiveAngleNumeric.DataContext = DrawCore.CurrentPrimitive.GeometryDrawing.Geometry.Transform as RotateTransform;
-
-            //DrawCore.PropertyChanged += (s, e) =>
-            //{
-            //    if (e.PropertyName == "CurrentPrimitive")
-            //    {
-            //        Debug.WriteLine(DrawCore.CurrentPrimitive.GeometryDrawing.Geometry.Transform);
-            //    }
-            //};
-
-            //polygonButton.Click += (s, e) =>
-            //{
-            //    treeView.Visibility = Visibility.Collapsed;
-            //};
-            polylineButton.Click += (s, e) =>
+            DrawCore.Action.PropertyChanged += (s, e) =>
             {
-                treeView.Visibility = Visibility.Visible;
+                if (e.PropertyName == "Type" || e.PropertyName == "DrawingType")
+                {
+                    SetToolBarButtonsStyle();
+                }
             };
-
+            
             treeView.ItemsSource = DrawCore.Figures;
-
-            //fillColorPicker.SelectedColor = Colors.Blue;
-            //borderColorPicker.SelectedColor = Colors.Black;
-            //borderWidthNumeric.Value = 2;
 
             fillColorCodeTextBox.LostFocus += (s, e) =>
             {
@@ -60,63 +50,71 @@ namespace LevelRedactor
             };
         }
 
+        private void SetToolBarButtonsStyle()
+        {
+            switch (DrawCore.Action.Type)
+            {
+                case ActionTypes.Draw:
+                    switch (DrawCore.Action.DrawingType)
+                    {
+                        case DrawingType.Rect:
+                            SetButtonsStyle(rectButton);
+                            break;
+                        case DrawingType.Ellipse:
+                            SetButtonsStyle(ellipseButton);
+                            break;
+                        case DrawingType.Line:
+                            SetButtonsStyle(lineButton);
+                            break;
+                        case DrawingType.Triengle:
+                            SetButtonsStyle(triangleButton);
+                            break;
+                        case DrawingType.Polygon:
+                            SetButtonsStyle(polygonButton);
+                            break;
+                        case DrawingType.Polyline:
+                            SetButtonsStyle(polylineButton);
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case ActionTypes.Move:
+                    SetButtonsStyle(moveButton);
+                    break;
+                case ActionTypes.Resize:
+                    break;
+                case ActionTypes.Unit:
+                    SetButtonsStyle(unitButton);
+                    break;
+                case ActionTypes.Link:
+                    SetButtonsStyle(linkButton);
+                    break;
+                case ActionTypes.Choice:
+                    SetButtonsStyle(arrowButton);
+                    break;
+                default:
+                    break;
+            }
 
+            void SetButtonsStyle(object sender)
+            {
+                foreach (var item in toolBar.Items)
+                {
+                    if (item is not Separator)
+                        if (item == sender)
+                        {
+                            ((Button)item).Background = new SolidColorBrush(Color.FromArgb(35, 0, 0, 150));
+                        }
+                        else
+                        {
+                            ((Button)item).Background = Brushes.Transparent;
+                        }
+                }
+            }
+        }
 
-        //private void Resize(Point currentPoint)
-        //{
-        //    switch (hitType)
-        //    {
-        //        case HitTypes.BR:
-        //            if (currentPoint.X > currentFigure.DrawPoint.X && currentPoint.Y > currentFigure.DrawPoint.Y)
-        //            {
-        //                ((Image)currentFigure.Child).Width = currentPoint.X - currentFigure.DrawPoint.X;
-        //                ((Image)currentFigure.Child).Height = currentPoint.Y - currentFigure.DrawPoint.Y;
-        //            }
-        //            break;
-        //        case HitTypes.R:
-        //            if (currentPoint.X > currentFigure.DrawPoint.X)
-        //            {
-        //                ((Image)currentFigure.Child).Width = currentPoint.X - currentFigure.DrawPoint.X;
-        //                ((Image)currentFigure.Child).Height = ((Image)currentFigure.Child).Height;
-        //            }
-        //            break;
-        //        case HitTypes.B:
-        //            if (currentPoint.Y > currentFigure.DrawPoint.Y)
-        //            {
-        //                ((Image)currentFigure.Child).Height = currentPoint.Y - currentFigure.DrawPoint.Y;
-        //                ((Image)currentFigure.Child).Width = ((Image)currentFigure.Child).Width;
-        //            }
-        //            break;
-        //        default:
-        //            break;
-        //    }
-        //}
-       
-        //private void LinkFigures(Point currentPoint)
-        //{
-        //    if (GetFigure(currentPoint) is Figure temp && temp != null && currentFigure != null && temp != currentFigure)
-        //    {
-        //        if (currentFigure.MajorFigureId == temp.Id || temp.MajorFigureId == currentFigure.Id)
-        //        {
-        //            MessageBox.Show("Эти фигуры уже связаны", "Действие невозможно", MessageBoxButton.OK);
-        //            currentAction = ActionTypes.None;
-        //            return;
-        //        }
-
-        //        currentFigure.MajorFigureId = temp.Id;
-
-        //        temp.AnchorFiguresId.Add(currentFigure.Id);
-
-        //        currentFigure.AnchorPoint = new(temp.DrawPoint.X - currentFigure.DrawPoint.X,
-        //                                        temp.DrawPoint.Y - currentFigure.DrawPoint.Y);
-        //    }
-        //    else
-        //    {
-        //        MessageBox.Show("Действие невозможно");
-        //    }
-
-        //    currentAction = ActionTypes.None;
-        //}
+        
 
 
         //private static HitTypes SetHitType(Figure figure, Point point)
@@ -194,40 +192,42 @@ namespace LevelRedactor
         //}
         private void InitButtons()
         {
-            arrowButton.Click += (s, e) => DrawCore.Action.Type = Drawing.ActionTypes.Choice;
-            moveButton.Click += (s, e) => DrawCore.Action.Type = Drawing.ActionTypes.Move;
-            unitButton.Click += (s, e) => DrawCore.Action.Type = Drawing.ActionTypes.Unit;
+            arrowButton.Click += (s, e) => DrawCore.Action.Type = ActionTypes.Choice;
+            moveButton.Click += (s, e) => DrawCore.Action.Type = ActionTypes.Move;
+            unitButton.Click += (s, e) => DrawCore.Action.Type = ActionTypes.Unit;
+            linkButton.Click += (s, e) => DrawCore.Action.Type = ActionTypes.Link;
 
             ellipseButton.Click += (s, e) =>
             {
                 DrawCore.Action.Type = ActionTypes.Draw;
                 DrawCore.Action.DrawingType = DrawingType.Ellipse;
-                SetButtonsStyle(s);
             };
             rectButton.Click += (s, e) =>
             {
                 DrawCore.Action.Type = ActionTypes.Draw;
                 DrawCore.Action.DrawingType = DrawingType.Rect;
-                SetButtonsStyle(s);
             };
             triangleButton.Click += (s, e) =>
             {
                 DrawCore.Action.Type = ActionTypes.Draw;
                 DrawCore.Action.DrawingType = DrawingType.Triengle;
-                SetButtonsStyle(s);
             };
             lineButton.Click += (s, e) =>
             {
                 DrawCore.Action.Type = ActionTypes.Draw;
                 DrawCore.Action.DrawingType = DrawingType.Line;
-                SetButtonsStyle(s);
             };
 
             polygonButton.Click += (s, e) =>
             {
                 DrawCore.Action.Type = ActionTypes.Draw;
                 DrawCore.Action.DrawingType = DrawingType.Polygon;
-                SetButtonsStyle(s);
+            };
+
+            polylineButton.Click += (s, e) =>
+            {
+                DrawCore.Action.Type = ActionTypes.Draw;
+                DrawCore.Action.DrawingType = DrawingType.Polyline;
             };
 
             divorceButton.Click += (s, e) => 
@@ -235,22 +235,22 @@ namespace LevelRedactor
                 DrawCore.Divorce();
             };
 
-            void SetButtonsStyle(object sender)
-            {
-                foreach (var item in toolBar.Items)
-                {
-                    if (item is not Separator)
-                        if (item == sender)
-                        {
-                            ((Button)item).Background = new SolidColorBrush(Color.FromArgb(35, 0, 0, 150));
-                        }
-                        else
-                        {
-                            ((Button)item).Background = Brushes.Transparent;
-                        }
-                }
-            }
-            
+            //void SetButtonsStyle(object sender)
+            //{
+            //    foreach (var item in toolBar.Items)
+            //    {
+            //        if (item is not Separator)
+            //            if (item == sender)
+            //            {
+            //                ((Button)item).Background = new SolidColorBrush(Color.FromArgb(35, 0, 0, 150));
+            //            }
+            //            else
+            //            {
+            //                ((Button)item).Background = Brushes.Transparent;
+            //            }
+            //    }
+            //}
+
             //setMajorFigureButton.Click += (s, e) =>
             //{
             //    if (currentFigure.MajorFigureId == 0)
@@ -303,5 +303,72 @@ namespace LevelRedactor
 
         //    currentFigure = null;
         //}
+
+        private void SaveFile(object sender, EventArgs e)
+        {
+            if (!IsDataCorrect())
+                return;
+
+            SetLevelDataWindow setLevelDataWindow = new();
+            if (setLevelDataWindow.ShowDialog() == true)
+            {
+                if (setLevelDataWindow.DialogResult == false)
+                    return;
+
+                string levelName = setLevelDataWindow.LevelName;
+                string tag = setLevelDataWindow.LevelTag;
+                string jsonString = Parser.Parser.ToJson(levelName, tag, DrawCore.Figures);
+
+                SaveFileDialog saveFileDialog = new() { Filter = "Файл уровня|*.json" };
+                if (saveFileDialog.ShowDialog() == true)
+                {
+                    File.WriteAllText(saveFileDialog.FileName, jsonString);
+                }
+            }
+        }
+        private void FastExport(object sender, EventArgs e)
+        {
+            if (!IsDataCorrect())
+                return;
+
+            SetLevelDataWindow setLevelDataWindow = new();
+            if (setLevelDataWindow.ShowDialog() == true)
+            {
+                if (setLevelDataWindow.DialogResult == false)
+                    return;
+
+                string levelName = setLevelDataWindow.LevelName;
+                string tag = setLevelDataWindow.LevelTag;
+
+                string jsonData = Parser.Parser.ToJson(levelName, tag, DrawCore.Figures);
+
+                LevelRepository lr = new();
+                lr.SendSetToServer(jsonData);
+            }
+        }
+        private bool IsDataCorrect()
+        {
+            if (DrawCore.Figures.Count == 0)
+            {
+                MessageBox.Show("Добавьте хотя бы одну фигуру", "Ошибка", MessageBoxButton.OK);
+                return false;
+            }
+
+            int countFiguresWithoutLink = 0;
+
+            foreach (Figure figure in DrawCore.Figures)
+            {
+                if (figure.MajorFigureId == 0)
+                    countFiguresWithoutLink++;
+            }
+
+            if (countFiguresWithoutLink > 1)
+            {
+                MessageBox.Show("Не все фигуры связаны", "Ошибка", MessageBoxButton.OK);
+                return false;
+            }
+
+            return true;
+        }
     }
 }

@@ -12,7 +12,6 @@ namespace LevelRedactor.Parser.Models
         public int Id { get; set; }
         public int MajorFigureId { get; set; }
         public Point AnchorPoint { get; set; }
-        public int Angle { get; set; }
         public int Width { get; set; }
         public int Height { get; set; }
         public int ZIndex { get; set; }
@@ -30,7 +29,6 @@ namespace LevelRedactor.Parser.Models
             Id = figure.Id;
             Title = figure.Title;
             ZIndex = figure.ZIndex;
-            Angle = (int)figure.Angle;
             Width = (int)figure.ActualWidth;
             Height = (int)figure.ActualHeight;
             MajorFigureId = figure.MajorFigureId;

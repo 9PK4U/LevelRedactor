@@ -15,6 +15,7 @@
             <RowDefinition Height="25"/>
             <RowDefinition Height="30"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="35"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
@@ -23,9 +24,16 @@
         </Grid.ColumnDefinitions>
 
         <Menu Grid.ColumnSpan="3">
-            <MenuItem Header="Файл"/>
+            <MenuItem Header="Файл">
+                <MenuItem Header="Открыть"/>
+                <MenuItem Header="Сохранить" Click="SaveFile"/>
+                <MenuItem/>
+            </MenuItem>
             <MenuItem Header="Вид"/>
-            <MenuItem Header="База данных"/>
+            <MenuItem Header="Экспорт">
+                <MenuItem Header="Открыть окно экспорта"/>
+                <MenuItem Header="Быстрый экспорт" Click="FastExport"/>
+            </MenuItem>
             <MenuItem Header="Справка"/>
         </Menu>
 
@@ -39,11 +47,11 @@
             <Button x:Name="unitButton" ToolTip="Объединить">
                 <Image Source="Resources/unit-icon.png" Width="24"/>
             </Button>
+            <Button x:Name="divorceButton" ToolTip="Отсоединить">
+                <Image Source="Resources/divorce-icon.png" Width="24"/>
+            </Button>
             <Button x:Name="linkButton" ToolTip="Связать">
                 <Image Source="Resources/link-icon.png" Width="24"/>
-            </Button>
-            <Button x:Name="divorceButton" ToolTip="Отсоединить" Content="Олег пидорас">
-
             </Button>
             <Separator/>
             <Button x:Name="ellipseButton">
@@ -344,14 +352,18 @@
         </Grid>
 
         <Border Grid.Row="2" Grid.Column="1"
-                BorderThickness="2, 2, 2, 0"
+                BorderThickness="2, 2, 2, 2"
                 BorderBrush="Black">
 
             <Canvas Name="canvas" 
                     Background="WhiteSmoke"/>
             
         </Border>
-
+        <StatusBar Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3">
+            <Label ContentStringFormat="Размер: {0}" Content="{Binding Path=Canvas.RenderSize}"/>
+            <Label ContentStringFormat="Координаты: {0}" Content="{Binding Path=CursorPoint}"/>
+        </StatusBar>
+    
         <Border Grid.Column="0" Grid.Row="2"
                 BorderBrush="Black"
                 BorderThickness="0, 1, 1, 1">
@@ -374,5 +386,6 @@
             </TreeView>
         </Border>
 
+        
     </Grid>
 </Window>

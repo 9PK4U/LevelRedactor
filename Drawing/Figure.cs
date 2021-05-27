@@ -36,40 +36,25 @@ namespace LevelRedactor.Drawing
                 OnPropertyChanged("MajorFigureId");
             }
         }
-        public Point AnchorPoint { get; set; }
-        public List<int> AnchorFiguresId { get; set; }
-        private double angle = 0;
-        public double Angle 
-        { 
-            get { return angle; } 
-            set
-            {
-                if (value >= 0 && value <= 359)
-                {
-                    angle = value;
-                    Child.RenderTransform = new RotateTransform(value);
-                }
-            }
-        }
-        public string Title 
+        public string Title
         {
-            get => title; 
-            set 
+            get => title;
+            set
             {
                 title = value;
                 OnPropertyChanged("Title");
-            } 
+            }
         }
-        public int ZIndex 
+        public int ZIndex
         {
-            get => zIndex; 
+            get => zIndex;
             set
             {
                 zIndex = value;
                 OnPropertyChanged("ZIndex");
             }
         }
-        public Point DrawPoint 
+        public Point DrawPoint
         {
             get => drawPoint;
             set
@@ -78,6 +63,8 @@ namespace LevelRedactor.Drawing
                 OnPropertyChanged("DrawPoint");
             }
         }
+        public Point AnchorPoint { get; set; }
+        public List<int> AnchorFiguresId { get; set; }
         public ObservableCollection<Primitive> Primitives { get; set; }
 
         public Figure() : base()
@@ -88,9 +75,6 @@ namespace LevelRedactor.Drawing
             Child = new Image() { Stretch = Stretch.Fill };
             AnchorFiguresId = new List<int>();
             Primitives = new ObservableCollection<Primitive>();
-
-            //BorderBrush = Brushes.Black;
-            //BorderThickness = new Thickness(2);
 
             Primitives.CollectionChanged += (s, e) =>
             {
@@ -107,7 +91,7 @@ namespace LevelRedactor.Drawing
                 }
             };
         }
-        public Figure(Parser.Models.FigureData figureData) : base()
+        public Figure(FigureData figureData) : base()
         {
             Child = new Image() { Stretch = Stretch.Fill };
             AnchorFiguresId = new List<int>();
@@ -139,8 +123,6 @@ namespace LevelRedactor.Drawing
 
             foreach (PrimitiveData item in figureData.PrimitivesData)
                 Primitives.Add(new Primitive(item));
-
-            Angle = figureData.Angle;
         }
 
         public void OnPropertyChanged([CallerMemberName] string prop = "")
@@ -152,7 +134,6 @@ namespace LevelRedactor.Drawing
             Figure newFigure = new()
             {
                 Child = new Image(),
-                Angle = Angle,
                 DrawPoint = DrawPoint
             };
 

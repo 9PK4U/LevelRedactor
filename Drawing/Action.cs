@@ -32,6 +32,7 @@ namespace LevelRedactor.Drawing
         public event PropertyChangedEventHandler PropertyChanged;
 
         private ActionTypes type;
+        private DrawingType drawingType;
         private ActionContext context;
 
         public ActionTypes Type
@@ -43,7 +44,15 @@ namespace LevelRedactor.Drawing
                 OnPropertyChanged("Type");
             }
         }
-        public DrawingType DrawingType { get; set; }
+        public DrawingType DrawingType 
+        {
+            get => drawingType; 
+            set
+            {
+                drawingType = value;
+                OnPropertyChanged("DrawingType");
+            }
+        }
         public ActionContext Context
         {
             get => context;

@@ -10,7 +10,9 @@ namespace LevelRedactor.Parser.Models
     public class PrimitiveData
     {
         private Point parentDrawpoint;
+
         public int BorderWidth { get; set; }
+        public int Angle { get; set; }
         public string FillColor { get; set; }
         public string BorderColor { get; set; }
         public string Type { get; set; }
@@ -36,10 +38,11 @@ namespace LevelRedactor.Parser.Models
             FillColor = primitive.GeometryDrawing.Brush.ToString();
             BorderColor = primitive.GeometryDrawing.Pen.Brush.ToString();
             BorderWidth = (int)primitive.GeometryDrawing.Pen.Thickness;
+            Angle = primitive.Angle;
 
-            SetParameters(primitive);
+            SetPoints(primitive);
         }
-        private void SetParameters(Primitive primitive)
+        private void SetPoints(Primitive primitive)
         {
             if (primitive.GeometryDrawing.Geometry is RectangleGeometry)
                 Type = "Rectangle";
@@ -62,16 +65,22 @@ namespace LevelRedactor.Parser.Models
             
             if (primitive.GeometryDrawing.Geometry is PathGeometry pathGeometry)
             {
-                Type = "Triangle";
+                Type = primitive.Type switch
+                {
+                    "Треугольник" => "Triangle",
+                    "Полигон" => "Polygon",
+                    "Ломаная" => "Polyline",
+                    _ => ""
+                };
 
-                PathFigure pf_triangle = pathGeometry.Figures[0];
+                PathFigure pathFigure = pathGeometry.Figures[0];
 
-                Point startPoint = new((int)(pf_triangle.StartPoint.X - parentDrawpoint.X),
-                                       (int)(pf_triangle.StartPoint.Y - parentDrawpoint.Y));
+                Point startPoint = new((int)(pathFigure.StartPoint.X - parentDrawpoint.X),
+                                       (int)(pathFigure.StartPoint.Y - parentDrawpoint.Y));
 
                 Points.Add(startPoint);
 
-                foreach (var point in pf_triangle.Segments)
+                foreach (var point in pathFigure.Segments)
                 {
                     Point temp = ((LineSegment)point).Point;
 

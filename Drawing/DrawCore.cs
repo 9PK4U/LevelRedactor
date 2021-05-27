@@ -13,19 +13,24 @@ using System.Runtime.CompilerServices;
 
 namespace LevelRedactor.Drawing
 {
+
+    public class  DrawingState
+    {
+        public bool IsDrawing { get; set; }
+        public Point OffsetPoint { get; set; }
+        public Point LastPoint { get; set; }
+        public int LastZIndex { get; set; }
+    }
     public class DrawCore : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
-        private bool IsDrawing = false;
-
-        private int lastZIndex;
-        private Point lastPosition;
-        private Point CursorPoint;
+        private DrawingState drawingState = new();
         private Figure currentFigure;
         private Primitive currentPrimitive;
         private Action action;
         private ObservableCollection<Figure> figures = new();
+        private Point cursorPoint;
 
         public Canvas Canvas { get; init; }
         public Figure CurrentFigure 
@@ -51,8 +56,23 @@ namespace LevelRedactor.Drawing
             get => action;
             set
             {
+                if (value.Type == ActionTypes.Link && CurrentFigure.MajorFigureId != 0)
+                {
+                    MessageBox.Show("Фигура уже имеет привязку", "Ошибка", MessageBoxButton.OK);
+                    return;
+                }
                 action = value;
                 OnPropertyChanged("Action");
+            }
+        }
+        public Point CursorPoint
+        {
+            get => cursorPoint;
+            private set
+            {
+                cursorPoint = value;
+                OnPropertyChanged("CursorPoint");
+                
             }
         }
         public ObservableCollection<Figure> Figures { get => figures; private set => figures = value; }
@@ -72,13 +92,13 @@ namespace LevelRedactor.Drawing
         {
             Point currentPoint = e.GetPosition(Canvas);
 
-            if (e.ClickCount == 2 && Action.Type == ActionTypes.Draw && Action.DrawingType == DrawingType.Polygon)
+            if (e.ClickCount == 2 && Action.Type == ActionTypes.Draw && (Action.DrawingType == DrawingType.Polygon || Action.DrawingType == DrawingType.Polyline) && drawingState.IsDrawing)
             {
                 CurrentFigure.DrawPoint = CurrentFigure.Primitives[0].GeometryDrawing.Bounds.TopLeft;
                 figures.Add(CurrentFigure);
                 CurrentPrimitive = CurrentFigure.Primitives[0];
                 Action.Type = ActionTypes.Move;
-                IsDrawing = false;
+                drawingState.IsDrawing = false;
             }
 
             switch (Action.Type)
@@ -89,7 +109,7 @@ namespace LevelRedactor.Drawing
                         Draw(currentPoint);
                         return;
                     }
-                    if (Action.DrawingType == DrawingType.Polygon && IsDrawing == false)
+                    if (Action.DrawingType == DrawingType.Polygon && drawingState.IsDrawing == false)
                         DrawPoly(currentPoint);
                     else
                         DrawPoly(currentPoint, false);
@@ -97,8 +117,8 @@ namespace LevelRedactor.Drawing
                 case ActionTypes.Move:
                     if ((CurrentFigure = GetFigure(currentPoint)) != null)
                     {
-                        lastPosition = currentFigure.DrawPoint;
-                        CursorPoint = new(currentPoint.X - CurrentFigure.DrawPoint.X, currentPoint.Y - CurrentFigure.DrawPoint.Y);
+                        drawingState.LastPoint = currentFigure.DrawPoint;
+                        drawingState.OffsetPoint = new(currentPoint.X - CurrentFigure.DrawPoint.X, currentPoint.Y - CurrentFigure.DrawPoint.Y);
                     }
                     break;
                 case ActionTypes.Resize:
@@ -107,6 +127,7 @@ namespace LevelRedactor.Drawing
                     UnitFigures(currentPoint);
                     break;
                 case ActionTypes.Link:
+                    LinkFigures(currentPoint);
                     break;
                 case ActionTypes.Choice:
                     if ((CurrentFigure = GetFigure(currentPoint)) != null)
@@ -119,6 +140,7 @@ namespace LevelRedactor.Drawing
         private void Canvas_MouseMove(object sender, MouseEventArgs e)
         {
             Point currentPoint = e.GetPosition(Canvas);
+            CursorPoint = currentPoint;
 
             switch (Action.Type)
             {
@@ -158,7 +180,7 @@ namespace LevelRedactor.Drawing
                     break;
                 case ActionTypes.Move:
                     if (CurrentFigure != null)
-                        PrimitiveBuilder.MakeNewPrimitives(CurrentFigure, lastPosition);
+                        PrimitiveBuilder.MakeNewPrimitives(CurrentFigure, drawingState.LastPoint);
                     break;
                 case ActionTypes.Resize:
                     break;
@@ -180,7 +202,7 @@ namespace LevelRedactor.Drawing
                 CurrentFigure = new Figure
                 {
                     DrawPoint = point,
-                    ZIndex = lastZIndex++
+                    ZIndex = drawingState.LastZIndex++
                 };
                 CurrentFigure.Primitives.Add(new Primitive()
                 {
@@ -238,7 +260,7 @@ namespace LevelRedactor.Drawing
                 CurrentFigure = new Figure
                 {
                     DrawPoint = point,
-                    ZIndex = lastZIndex++
+                    ZIndex = drawingState.LastZIndex++
                 };
                 CurrentFigure.Primitives.Add(new Primitive()
                 {
@@ -259,7 +281,7 @@ namespace LevelRedactor.Drawing
                 Canvas.SetTop(CurrentFigure, point.Y);
                 Canvas.SetLeft(CurrentFigure, point.X);
 
-                IsDrawing = true;
+                drawingState.IsDrawing = true;
             }
             else
             {
@@ -274,8 +296,8 @@ namespace LevelRedactor.Drawing
             double width = CurrentFigure.ActualWidth;
             double height = CurrentFigure.ActualHeight;
 
-            double x_pos = (int)(point.X - CursorPoint.X);
-            double y_pos = (int)(point.Y - CursorPoint.Y);
+            double x_pos = (int)(point.X - drawingState.OffsetPoint.X);
+            double y_pos = (int)(point.Y - drawingState.OffsetPoint.Y);
 
             if (x_pos >= 0 && y_pos >= 0
                 && x_pos + width <= Canvas.ActualWidth
@@ -330,37 +352,39 @@ namespace LevelRedactor.Drawing
             {
                 MessageBox.Show("Действие невозможно");
             }
+
+            Action.Type = ActionTypes.Choice;
         }
         private void LinkFigures(Point point)
         {
-            //CurrentPrimitive.GeometryDrawing.Geometry.Transform = new RotateTransform()
-            //if (GetFigure(currentPoint) is Figure temp && temp != null && currentFigure != null && temp != currentFigure)
-            //{
-            //    if (currentFigure.MajorFigureId == temp.Id || temp.MajorFigureId == currentFigure.Id)
-            //    {
-            //        MessageBox.Show("Эти фигуры уже связаны", "Действие невозможно", MessageBoxButton.OK);
-            //        currentAction = ActionTypes.None;
-            //        return;
-            //    }
+            if (GetFigure(point) is Figure temp && temp != null && currentFigure != null && temp != currentFigure)
+            {
+                if (currentFigure.MajorFigureId == temp.Id || temp.MajorFigureId == currentFigure.Id)
+                {
+                    MessageBox.Show("Эти фигуры уже связаны", "Действие невозможно", MessageBoxButton.OK);
+                    Action.Type = ActionTypes.Choice;
+                    return;
+                }
 
-            //    currentFigure.MajorFigureId = temp.Id;
+                currentFigure.MajorFigureId = temp.Id;
 
-            //    temp.AnchorFiguresId.Add(currentFigure.Id);
+                temp.AnchorFiguresId.Add(currentFigure.Id);
 
-            //    currentFigure.AnchorPoint = new(temp.DrawPoint.X - currentFigure.DrawPoint.X,
-            //                                    temp.DrawPoint.Y - currentFigure.DrawPoint.Y);
-            //}
-            //else
-            //{
-            //    MessageBox.Show("Действие невозможно");
-            //}
+                currentFigure.AnchorPoint = new(temp.DrawPoint.X - currentFigure.DrawPoint.X,
+                                                temp.DrawPoint.Y - currentFigure.DrawPoint.Y);
+            }
+            else
+            {
+                MessageBox.Show("Действие невозможно");
+            }
 
+            Action.Type = ActionTypes.Choice;
         }
         public void Divorce()
         {
             if (CurrentPrimitive != null)
             {
-                Figure f = new() { ZIndex = ++lastZIndex, DrawPoint = CurrentPrimitive.GeometryDrawing.Bounds.Location };
+                Figure f = new() { ZIndex = ++drawingState.LastZIndex, DrawPoint = CurrentPrimitive.GeometryDrawing.Bounds.Location };
                 f.Primitives.Add(CurrentPrimitive);
                 CurrentFigure.Primitives.Remove(CurrentPrimitive);
                 figures.Add(f);
