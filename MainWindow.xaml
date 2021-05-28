@@ -28,10 +28,6 @@
                 <MenuItem Header="Сохранить" Click="SaveFile"/>
                 <MenuItem/>
             </MenuItem>
-            <MenuItem Header="Вид">
-                <MenuItem Header="Отобразить сетку"/>
-                <MenuItem Header="Отобразить подсказки"/>
-            </MenuItem>
             <MenuItem Header="Экспорт">
                 <MenuItem Header="Открыть окно экспорта"/>
                 <MenuItem Header="Быстрый экспорт" Click="FastExport"/>
@@ -46,6 +42,7 @@
             <Button x:Name="moveButton" ToolTip="Переместить">
                 <Image Source="Resources/move-icon.png" Width="24"/>
             </Button>
+            <Separator/>
             <Button x:Name="unitButton" ToolTip="Объединить">
                 <Image Source="Resources/unit-icon.png" Width="24"/>
             </Button>
@@ -54,6 +51,13 @@
             </Button>
             <Button x:Name="linkButton" ToolTip="Связать">
                 <Image Source="Resources/link-icon.png" Width="24"/>
+            </Button>
+            <Separator/>
+            <Button x:Name="incZIndexButton" ToolTip="На передний план">
+                <Image Source="Resources/incZIndex-icon.png" Width="24"/>
+            </Button>
+            <Button x:Name="decZIndexButton" ToolTip="На задний план">
+                <Image Source="Resources/decZIndex-icon.png" Width="24"/>
             </Button>
             <Separator/>
             <Button x:Name="ellipseButton">
@@ -73,6 +77,9 @@
             </Button>
             <Button x:Name="polygonButton">
                 <Image Source="Resources/polygon-icon.png" Width="24"/>
+            </Button>
+            <Button x:Name="recalcAnchorpointsButton" Content="Пересчитать точки привязки">
+                
             </Button>
         </ToolBar>
 

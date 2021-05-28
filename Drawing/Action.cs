@@ -12,7 +12,7 @@ namespace LevelRedactor.Drawing
     {
         Draw,
         Move,
-        Resize,
+        //Resize,
         Unit,
         Link,
         Choice

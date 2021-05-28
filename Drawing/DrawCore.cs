@@ -2,12 +2,9 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Diagnostics;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
@@ -19,6 +16,7 @@ namespace LevelRedactor.Drawing
 
         private DrawingState drawingState = new();
         private Figure currentFigure;
+        private Figure tempFigure;
         private Primitive currentPrimitive;
         private Action action;
         private ObservableCollection<Figure> figures = new();
@@ -117,10 +115,7 @@ namespace LevelRedactor.Drawing
                     else
                     {
                         CurrentFigure = null;
-
                     }
-                    break;
-                case ActionTypes.Resize:
                     break;
                 case ActionTypes.Unit:
                     UnitFigures(currentPoint);
@@ -144,14 +139,16 @@ namespace LevelRedactor.Drawing
             switch (Action.Type)
             {
                 case ActionTypes.Draw:
-                    if (e.LeftButton == MouseButtonState.Pressed)
+                    if (e.LeftButton == MouseButtonState.Pressed && currentFigure is not null)
+                    {
                         Draw(currentPoint, false);
+                    }
                     break;
                 case ActionTypes.Move:
                     if (CurrentFigure != null && e.LeftButton == MouseButtonState.Pressed)
+                    {
                         MoveFigure(currentPoint);
-                    break;
-                case ActionTypes.Resize:
+                    }
                     break;
                 case ActionTypes.Unit:
                     break;
@@ -179,10 +176,11 @@ namespace LevelRedactor.Drawing
                     }
                     break;
                 case ActionTypes.Move:
-                    if (CurrentFigure != null)
+                    if (CurrentFigure is not null)
+                    {
+                        CurrentFigure.DrawPoint = GetDrawPoint();
                         PrimitiveBuilder.MakeNewPrimitives(CurrentFigure, drawingState.LastPoint);
-                    break;
-                case ActionTypes.Resize:
+                    }
                     break;
                 case ActionTypes.Unit:
                     break;
@@ -277,7 +275,7 @@ namespace LevelRedactor.Drawing
 
                 if (Action.DrawingType == DrawingType.Polygon)
                 {
-                    CurrentFigure.Primitives[0].Type = "Полигон";
+                    CurrentFigure.Primitives[0].Type = "Многоугольник";
                     pf = new() { StartPoint = CurrentFigure.DrawPoint, IsClosed = true };
                 }
                 else
@@ -313,13 +311,13 @@ namespace LevelRedactor.Drawing
             double x_pos = (int)(point.X - drawingState.OffsetPoint.X);
             double y_pos = (int)(point.Y - drawingState.OffsetPoint.Y);
 
-            if (x_pos >= 0 && y_pos >= 0
-                && x_pos + width <= Canvas.ActualWidth
-                && y_pos + height <= Canvas.ActualHeight)
+            if (x_pos >= 0 && x_pos + width <= Canvas.ActualWidth)
+            {
+                Canvas.SetLeft(CurrentFigure, x_pos);
+            }
+            if (y_pos >= 0 && y_pos + height <= Canvas.ActualHeight)
             {
                 Canvas.SetTop(CurrentFigure, y_pos);
-                Canvas.SetLeft(CurrentFigure, x_pos);
-                CurrentFigure.DrawPoint = GetDrawPoint();
             }
         }
         private void UnitFigures(Point point)
@@ -410,7 +408,30 @@ namespace LevelRedactor.Drawing
                 Canvas.SetZIndex(CurrentFigure, CurrentFigure.ZIndex);
             }
         }
-        
+        public void ChangeFigureZIndex(bool isInc)
+        {
+            if (CurrentFigure is not null)
+            {
+                if (isInc && CurrentFigure.ZIndex != drawingState.LastZIndex - 1)
+                {
+                    Canvas.SetZIndex(CurrentFigure, ++CurrentFigure.ZIndex);
+                    foreach (Figure item in Figures)
+                    {
+                        if (item != CurrentFigure && item.ZIndex == CurrentFigure.ZIndex)
+                            Canvas.SetZIndex(item, --item.ZIndex);
+                    }
+                }
+                if (isInc == false && CurrentFigure.ZIndex != 0)
+                {
+                    Canvas.SetZIndex(CurrentFigure, --CurrentFigure.ZIndex);
+                    foreach (Figure item in Figures)
+                    {
+                        if (item != CurrentFigure && item.ZIndex == CurrentFigure.ZIndex)
+                            Canvas.SetZIndex(item, ++item.ZIndex);
+                    }
+                }
+            }
+        }
         private Figure GetFigure(in Point point)
         {
             if (VisualTreeHelper.HitTest(Canvas, point) is var hit && hit == null || hit.VisualHit == Canvas)
@@ -472,7 +493,48 @@ namespace LevelRedactor.Drawing
 
             currentFigure = null;
         }
+        public void CopyFigure(object sender, ExecutedRoutedEventArgs e) => tempFigure = CurrentFigure;
+        public void PasteFigure(object sender, ExecutedRoutedEventArgs e)
+        {
+            if (tempFigure is not null)
+            {
+                currentFigure = (Figure)tempFigure.Clone();
+                currentFigure.ZIndex = drawingState.LastZIndex++;
 
+                figures.Add(currentFigure);
+                Canvas.Children.Add(currentFigure);
+
+                Canvas.SetLeft(currentFigure, currentFigure.DrawPoint.X);
+                Canvas.SetTop(currentFigure, currentFigure.DrawPoint.Y);
+                Canvas.SetZIndex(currentFigure, currentFigure.ZIndex);
+            }
+        }
+        public void RecalcAnchorPoints()
+        {
+            Figure GetById(int id)
+            {
+                foreach (Figure item in Figures)
+                {
+                    if (item.Id == id)
+                    {
+                        return item;
+                    }
+                }
+                return null;
+            }
+
+            foreach (Figure dependenеtFigure in Figures)
+            {
+                if (dependenеtFigure.MajorFigureId != 0)
+                {
+                    Figure majorFigure = GetById(dependenеtFigure.MajorFigureId);
+
+                    dependenеtFigure.AnchorPoint = new(majorFigure.DrawPoint.X - currentFigure.DrawPoint.X,
+                                                        majorFigure.DrawPoint.Y - currentFigure.DrawPoint.Y);
+                }
+            }
+        }
+        
         public void OnPropertyChanged([CallerMemberName] string prop = "")
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
