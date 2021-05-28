@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
@@ -45,10 +46,8 @@ namespace LevelRedactor
                 new BsonDocument("Tag", levelData.Tag)
             });
 
-            collection.ReplaceOne(filter, bsonDocument);
-
-            //collection.InsertOne(bsonDocument);
-            
+            if (collection.ReplaceOne(filter, bsonDocument).IsAcknowledged)
+                collection.InsertOne(bsonDocument);
         }
     }
 }

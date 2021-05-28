@@ -20,6 +20,15 @@ namespace LevelRedactor
     /// Interaction logic for MainWindow.xaml
     /// </summary>
 
+    /*
+     * ctrl+C ctrl+V
+     * delete
+     * ctrl+z ????
+     * shift = move
+     * ctrl+O ctrl+S
+     * развязать
+     * пересчёт связок ?????
+     */
 
     public partial class MainWindow : Window
     {
@@ -29,12 +38,12 @@ namespace LevelRedactor
         {
             InitializeComponent();
 
-            InitButtons();
-            //InitHotKeys();
-
             DrawCore = new(canvas);
             DataContext = DrawCore;
             treeView.ItemsSource = DrawCore.Figures;
+
+            InitButtons();
+            InitHotKeys();
 
             DrawCore.Action.PropertyChanged += (s, e) =>
             {
@@ -243,20 +252,20 @@ namespace LevelRedactor
         //    };
         //}
 
-        //private void InitHotKeys()
-        //{
-        //    CommandBinding copyCommand = new() { Command = ApplicationCommands.Copy };
-        //    copyCommand.Executed += CopyFigure;
-        //    CommandBindings.Add(copyCommand);
+        private void InitHotKeys()
+        {
+            //CommandBinding copyCommand = new() { Command = ApplicationCommands.Copy };
+            //copyCommand.Executed += CopyFigure;
+            //CommandBindings.Add(copyCommand);
 
-        //    CommandBinding pasteCommand = new() { Command = ApplicationCommands.Paste };
-        //    pasteCommand.Executed += PasteFigure;
-        //    CommandBindings.Add(pasteCommand);
+            //CommandBinding pasteCommand = new() { Command = ApplicationCommands.Paste };
+            //pasteCommand.Executed += PasteFigure;
+            //CommandBindings.Add(pasteCommand);
 
-        //    CommandBinding deleteCommand = new() { Command = ApplicationCommands.Delete };
-        //    deleteCommand.Executed += DeleteFigure;
-        //    CommandBindings.Add(deleteCommand);
-        //}
+            CommandBinding deleteCommand = new() { Command = ApplicationCommands.Delete };
+            deleteCommand.Executed += DrawCore.DeleteFigure;
+            CommandBindings.Add(deleteCommand);
+        }
         private void InitButtons()
         {
             arrowButton.Click += (s, e) => DrawCore.Action.Type = ActionTypes.Choice;
@@ -376,7 +385,7 @@ namespace LevelRedactor
                 if (setLevelDataWindow.DialogResult == false)
                     return;
 
-                string levelName = setLevelDataWindow.LevelName;
+                string levelName = setLevelDataWindow.Title;
                 string tag = setLevelDataWindow.LevelTag;
                 string jsonString = Parser.Parser.ToJson(levelName, tag, DrawCore.Figures);
 
@@ -403,8 +412,16 @@ namespace LevelRedactor
 
                 LevelData lvlData = new(DrawCore.Figures) { Title = title, Tag = tag };
 
-                LevelRepository lr = new();
-                lr.SendSetToServer(lvlData);
+                try
+                {
+                    LevelRepository lr = new();
+                    lr.SendSetToServer(lvlData);
+                }
+                catch (Exception)
+                {
+                    MessageBox.Show("Сервер недоступен, проверьте соединение.", "Ошибка", MessageBoxButton.OK);
+                }
+                
             }
         }
         private bool IsDataCorrect()

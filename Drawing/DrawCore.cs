@@ -109,10 +109,15 @@ namespace LevelRedactor.Drawing
                         DrawPoly(currentPoint, false);
                     break;
                 case ActionTypes.Move:
-                    if ((CurrentFigure = GetFigure(currentPoint)) != null)
+                    if ( (CurrentFigure = GetFigure(currentPoint)) is not null && (CurrentPrimitive = GetPrimitive(currentPoint)) is not null)
                     {
                         drawingState.LastPoint = currentFigure.DrawPoint;
                         drawingState.OffsetPoint = new(currentPoint.X - CurrentFigure.DrawPoint.X, currentPoint.Y - CurrentFigure.DrawPoint.Y);
+                    }
+                    else
+                    {
+                        CurrentFigure = null;
+
                     }
                     break;
                 case ActionTypes.Resize:
@@ -441,7 +446,33 @@ namespace LevelRedactor.Drawing
         }
         
         private Point GetDrawPoint() => new(Canvas.GetLeft(CurrentFigure), Canvas.GetTop(CurrentFigure));
-        
+
+        public void DeleteFigure(object sender, ExecutedRoutedEventArgs e)
+        {
+            if (currentFigure is null)
+                return;
+
+            figures.Remove(currentFigure);
+            Canvas.Children.Remove(currentFigure);
+
+            if (currentFigure.MajorFigureId != 0 || currentFigure.AnchorFiguresId.Count > 0)
+            {
+                foreach (var item in figures)
+                {
+                    if (item.Id == currentFigure.MajorFigureId)
+                    {
+                        item.AnchorFiguresId.Remove(currentFigure.Id);
+                    }
+                    if (item.MajorFigureId == currentFigure.Id)
+                    {
+                        item.MajorFigureId = 0;
+                    }
+                }
+            }
+
+            currentFigure = null;
+        }
+
         public void OnPropertyChanged([CallerMemberName] string prop = "")
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
