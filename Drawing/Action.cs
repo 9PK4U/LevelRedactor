@@ -15,7 +15,7 @@ namespace LevelRedactor.Drawing
         Resize,
         Unit,
         Link,
-        Choice,
+        Choice
     }
     public enum DrawingType
     {

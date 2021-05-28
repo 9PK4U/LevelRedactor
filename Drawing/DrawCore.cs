@@ -13,14 +13,6 @@ using System.Runtime.CompilerServices;
 
 namespace LevelRedactor.Drawing
 {
-
-    public class  DrawingState
-    {
-        public bool IsDrawing { get; set; }
-        public Point OffsetPoint { get; set; }
-        public Point LastPoint { get; set; }
-        public int LastZIndex { get; set; }
-    }
     public class DrawCore : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
@@ -92,7 +84,9 @@ namespace LevelRedactor.Drawing
         {
             Point currentPoint = e.GetPosition(Canvas);
 
-            if (e.ClickCount == 2 && Action.Type == ActionTypes.Draw && (Action.DrawingType == DrawingType.Polygon || Action.DrawingType == DrawingType.Polyline) && drawingState.IsDrawing)
+            if (e.ClickCount == 2 && Action.Type == ActionTypes.Draw && 
+                (Action.DrawingType is DrawingType.Polygon or DrawingType.Polyline) && 
+                drawingState.IsDrawing)
             {
                 CurrentFigure.DrawPoint = CurrentFigure.Primitives[0].GeometryDrawing.Bounds.TopLeft;
                 figures.Add(CurrentFigure);
@@ -104,12 +98,12 @@ namespace LevelRedactor.Drawing
             switch (Action.Type)
             {
                 case ActionTypes.Draw:
-                    if (Action.DrawingType != DrawingType.Polygon)
+                    if (Action.DrawingType is not DrawingType.Polygon and not DrawingType.Polyline)
                     {
                         Draw(currentPoint);
                         return;
                     }
-                    if (Action.DrawingType == DrawingType.Polygon && drawingState.IsDrawing == false)
+                    if ((Action.DrawingType is DrawingType.Polygon or DrawingType.Polyline) && drawingState.IsDrawing == false)
                         DrawPoly(currentPoint);
                     else
                         DrawPoly(currentPoint, false);
@@ -170,11 +164,12 @@ namespace LevelRedactor.Drawing
             switch (Action.Type)
             {
                 case ActionTypes.Draw:
-                    if (Action.DrawingType != DrawingType.Polygon)
+                    if (Action.DrawingType is not DrawingType.Polygon and not DrawingType.Polyline)
                     {
                         CurrentFigure.DrawPoint = CurrentFigure.Primitives[0].GeometryDrawing.Bounds.TopLeft;
                         figures.Add(CurrentFigure);
                         CurrentPrimitive = CurrentFigure.Primitives[0];
+                        drawingState.IsDrawing = false;
                         Action.Type = ActionTypes.Move;
                     }
                     break;
@@ -199,6 +194,8 @@ namespace LevelRedactor.Drawing
         { 
             if (isBegin)
             {
+                drawingState.IsDrawing = true;
+
                 CurrentFigure = new Figure
                 {
                     DrawPoint = point,
@@ -271,8 +268,20 @@ namespace LevelRedactor.Drawing
                     }
                 });
 
-                CurrentFigure.Primitives[0].Type = "Полигон";
-                PathFigure pf = new() { StartPoint = CurrentFigure.DrawPoint, IsClosed = true };
+                PathFigure pf;
+
+                if (Action.DrawingType == DrawingType.Polygon)
+                {
+                    CurrentFigure.Primitives[0].Type = "Полигон";
+                    pf = new() { StartPoint = CurrentFigure.DrawPoint, IsClosed = true };
+                }
+                else
+                {
+                    CurrentFigure.Primitives[0].Type = "Ломанная";
+                    CurrentFigure.Primitives[0].GeometryDrawing.Brush = Brushes.Transparent;
+                    pf = new() { StartPoint = CurrentFigure.DrawPoint, IsClosed = false };
+                }
+
                 CurrentFigure.Primitives[0].GeometryDrawing.Geometry = new PathGeometry();
                 ((PathGeometry)CurrentFigure.Primitives[0].GeometryDrawing.Geometry).Figures.Add(pf);
 
@@ -382,7 +391,7 @@ namespace LevelRedactor.Drawing
         }
         public void Divorce()
         {
-            if (CurrentPrimitive != null)
+            if (CurrentPrimitive is not null && CurrentFigure.Primitives.Count > 1)
             {
                 Figure f = new() { ZIndex = ++drawingState.LastZIndex, DrawPoint = CurrentPrimitive.GeometryDrawing.Bounds.Location };
                 f.Primitives.Add(CurrentPrimitive);

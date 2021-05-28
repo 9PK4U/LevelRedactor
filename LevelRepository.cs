@@ -27,7 +27,7 @@ namespace LevelRedactor
             database = client.GetDatabase("GameData");
         }
 
-        public void SendSetToServer(string jsonDocumentStr)
+        public void SendSetToServer(LevelData levelData)
         {
             IMongoCollection<BsonDocument> collection = database.GetCollection<BsonDocument>("Maps");
             IMongoCollection<BsonDocument> collectionUpdate = database.GetCollection<BsonDocument>("Configurations");
@@ -36,10 +36,18 @@ namespace LevelRedactor
                 new BsonDocument("Update", "Levels"),
                 new BsonDocument("$set", new BsonDocument("DataLevelUpdate", DateTime.Now.ToString())));
 
+            string jsonData = JsonSerializer.Serialize(levelData);
+            var bsonDocument = BsonSerializer.Deserialize<BsonDocument>(jsonData);
 
-            var bsonDocument = BsonSerializer.Deserialize<BsonDocument>(jsonDocumentStr);
+            var filter = new BsonDocument("$and", new BsonArray
+            {
+                new BsonDocument("Title", levelData.Title),
+                new BsonDocument("Tag", levelData.Tag)
+            });
 
-            collection.InsertOne(bsonDocument);
+            collection.ReplaceOne(filter, bsonDocument);
+
+            //collection.InsertOne(bsonDocument);
             
         }
     }

@@ -4,7 +4,6 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:LevelRedactor"
-        xmlns:drCore="clr-namespace:LevelRedactor.Drawing"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         WindowState="Maximized"
         mc:Ignorable="d"
@@ -29,7 +28,10 @@
                 <MenuItem Header="Сохранить" Click="SaveFile"/>
                 <MenuItem/>
             </MenuItem>
-            <MenuItem Header="Вид"/>
+            <MenuItem Header="Вид">
+                <MenuItem Header="Отобразить сетку"/>
+                <MenuItem Header="Отобразить подсказки"/>
+            </MenuItem>
             <MenuItem Header="Экспорт">
                 <MenuItem Header="Открыть окно экспорта"/>
                 <MenuItem Header="Быстрый экспорт" Click="FastExport"/>
@@ -352,26 +354,43 @@
         </Grid>
 
         <Border Grid.Row="2" Grid.Column="1"
-                BorderThickness="2, 2, 2, 2"
+                BorderThickness="2, 2, 2, 1"
                 BorderBrush="Black">
-
             <Canvas Name="canvas" 
                     Background="WhiteSmoke"/>
             
         </Border>
-        <StatusBar Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3">
-            <Label ContentStringFormat="Размер: {0}" Content="{Binding Path=Canvas.RenderSize}"/>
-            <Label ContentStringFormat="Координаты: {0}" Content="{Binding Path=CursorPoint}"/>
-        </StatusBar>
+        <Border BorderBrush="Black"
+                BorderThickness="0, 0.5, 0, 0"
+                Grid.Row="3" Grid.Column="0" 
+                Grid.ColumnSpan="3">
+            <StatusBar >
+                <Label ContentStringFormat="Размер: {0}" Content="{Binding Path=Canvas.RenderSize}"/>
+                <Label ContentStringFormat="Координаты: {0}" Content="{Binding Path=CursorPoint}"/>
+                <Separator/>
+                <Label Content="Инструмент:"/>
+                <Label x:Name="toolLabel"/>
+                <Label Content="Подсказка:"/>
+                <Label x:Name="promptLabel"/>
+            </StatusBar>
+        </Border>
+        
     
         <Border Grid.Column="0" Grid.Row="2"
                 BorderBrush="Black"
-                BorderThickness="0, 1, 1, 1">
+                BorderThickness="0, 1, 0, 0.5">
             <TreeView x:Name="treeView" MaxWidth="200" Width="200">
                 <TreeView.ItemTemplate>
                     <HierarchicalDataTemplate ItemsSource="{Binding Path=Primitives}">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="{Binding Title}"/>
+                            <TextBlock>
+                                <TextBlock.Text>
+                                    <MultiBinding StringFormat="{}{0}:{1}">
+                                        <Binding Path="Id"/>
+                                        <Binding Path="Title"/>
+                                    </MultiBinding>
+                                </TextBlock.Text>
+                            </TextBlock>
                             <TextBlock Text=" [" Foreground="Blue"/>
                             <TextBlock Text="{Binding Primitives.Count}" Foreground="Blue" />
                             <TextBlock Text="]" Foreground="Blue" />

@@ -15,9 +15,9 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <TextBlock Text="Введите имя уровня:"/>
-        <TextBox Name="levelNameBox" Grid.Row="1" MinWidth="250"/>
+        <TextBox Name="levelTitleTextBox" Grid.Row="1" MinWidth="250"/>
         <TextBlock Text="Введите тег:" Grid.Row="2"/>
-        <TextBox Name="levelTagBox" Grid.Row="3" MinWidth="250"/>
+        <TextBox Name="levelTagTextBox" Grid.Row="3" MinWidth="250"/>
         <WrapPanel Grid.Row="4" HorizontalAlignment="Right" Margin="0,15,0,0">
             <Button IsDefault="True" Click="Accept_Click" MinWidth="60" Margin="0,0,10,0">OK</Button>
             <Button IsCancel="True" MinWidth="60">Отмена</Button>

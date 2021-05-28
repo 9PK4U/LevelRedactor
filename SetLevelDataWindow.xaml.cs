@@ -13,13 +13,13 @@ namespace LevelRedactor
             DialogResult = true;
         }
 
-        public string LevelName
+        public string LevelTitle
         {
-            get { return levelNameBox.Text; }
+            get { return levelTitleTextBox.Text; }
         }
         public string LevelTag
         {
-            get { return levelTagBox.Text; }
+            get { return levelTagTextBox.Text; }
         }
     }
 }

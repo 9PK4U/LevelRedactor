@@ -9,6 +9,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using LevelRedactor.Drawing;
 using Microsoft.Win32;
+using Toolkit = Xceed.Wpf.Toolkit;
 
 using LevelRedactor.Parser;
 using LevelRedactor.Parser.Models;
@@ -33,23 +34,71 @@ namespace LevelRedactor
 
             DrawCore = new(canvas);
             DataContext = DrawCore;
+            treeView.ItemsSource = DrawCore.Figures;
 
             DrawCore.Action.PropertyChanged += (s, e) =>
             {
-                if (e.PropertyName == "Type" || e.PropertyName == "DrawingType")
+                if (e.PropertyName is "Type" or "DrawingType")
                 {
                     SetToolBarButtonsStyle();
                 }
             };
-            
-            treeView.ItemsSource = DrawCore.Figures;
-
-            fillColorCodeTextBox.LostFocus += (s, e) =>
+            DrawCore.Action.Context.PropertyChanged += (s, e) =>
             {
-                fillColorPicker.SelectedColor = (Color)ColorConverter.ConvertFromString(fillColorCodeTextBox.Text);
+                switch (e.PropertyName)
+                {
+                    case "FillColor":
+                        fillColorCodeTextBox.Text = DrawCore.Action.Context.FillColor.ToString();
+                        break;
+                    case "BorderColor":
+                        borderColorCodeTextBox.Text = DrawCore.Action.Context.BorderColor.ToString();
+                        break;
+                    default:
+                        break;
+                }
+            };
+            fillColorCodeTextBox.KeyDown += (s, e) =>
+            {
+                if (e.Key is Key.Enter)
+                    SetColorFromString(fillColorCodeTextBox, fillColorPicker, fillColorCodeTextBox.Text);
+            };
+            borderColorCodeTextBox.KeyDown += (s, e) =>
+            {
+                if (e.Key is Key.Enter)
+                    SetColorFromString(borderColorCodeTextBox, borderColorPicker, borderColorCodeTextBox.Text);
+            };
+
+            treeView.SelectedItemChanged += (s, e) =>
+            {
+                if (treeView.SelectedItem is Figure figure)
+                    DrawCore.CurrentFigure = figure;
+
+                if (treeView.SelectedItem is Primitive primitive)
+                {
+                    foreach (Figure f in DrawCore.Figures)
+                    {
+                        foreach (Primitive p in f.Primitives)
+                        {
+                            if (p == primitive)
+                                DrawCore.CurrentFigure = f;
+                        }
+                    }
+                    DrawCore.CurrentPrimitive = primitive;
+                }
             };
         }
 
+        private static void SetColorFromString(TextBox sender, Toolkit.ColorPicker target, string hexColor)
+        {
+            try
+            {
+                target.SelectedColor = (Color)ColorConverter.ConvertFromString(hexColor);
+            }
+            catch (Exception)
+            {
+                sender.Text = null;
+            }
+        }
         private void SetToolBarButtonsStyle()
         {
             switch (DrawCore.Action.Type)
@@ -97,6 +146,8 @@ namespace LevelRedactor
                     break;
             }
 
+            SetToolAndPromptInto();
+
             void SetButtonsStyle(object sender)
             {
                 foreach (var item in toolBar.Items)
@@ -112,9 +163,25 @@ namespace LevelRedactor
                         }
                 }
             }
+            void SetToolAndPromptInto()
+            {
+                string drawingPrompt = "Нажмите и удерживайте ЛКМ для рисования";
+                (toolLabel.Content, promptLabel.Content) = (DrawCore.Action.Type, DrawCore.Action.DrawingType) switch
+                {
+                    (ActionTypes.Choice, _) => ("Указатель", "Нажмите чтобы выбрать примитив и фигуру"),
+                    (ActionTypes.Move, _) => ("Перемещение", "Нажмите и удерживайте ЛКМ чтобы переместить фиугуру"),
+                    (ActionTypes.Unit, _) => ("Объединение", "Выберете фигуру для объединения"),
+                    (ActionTypes.Link, _) => ("Привязка", "Выберете фигуру для привязки"),
+                    (_, DrawingType.Ellipse) => ("Овал", drawingPrompt),
+                    (_, DrawingType.Rect) => ("Прямоугольник", drawingPrompt),
+                    (_, DrawingType.Triengle) => ("Треугольник", drawingPrompt),
+                    (_, DrawingType.Line) => ("Прямая", drawingPrompt),
+                    (_, DrawingType.Polyline) => ("Ломанная", "Дважды нажмите ЛКМ чтобы закончить рисовать"),
+                    (_, DrawingType.Polygon) => ("Многоугольник", "Дважды нажмите ЛКМ чтобы закончить рисовать"),
+                };
+            }
         }
 
-        
 
 
         //private static HitTypes SetHitType(Figure figure, Point point)
@@ -196,6 +263,7 @@ namespace LevelRedactor
             moveButton.Click += (s, e) => DrawCore.Action.Type = ActionTypes.Move;
             unitButton.Click += (s, e) => DrawCore.Action.Type = ActionTypes.Unit;
             linkButton.Click += (s, e) => DrawCore.Action.Type = ActionTypes.Link;
+            divorceButton.Click += (s, e) => DrawCore.Divorce();
 
             ellipseButton.Click += (s, e) =>
             {
@@ -217,22 +285,15 @@ namespace LevelRedactor
                 DrawCore.Action.Type = ActionTypes.Draw;
                 DrawCore.Action.DrawingType = DrawingType.Line;
             };
-
             polygonButton.Click += (s, e) =>
             {
                 DrawCore.Action.Type = ActionTypes.Draw;
                 DrawCore.Action.DrawingType = DrawingType.Polygon;
             };
-
             polylineButton.Click += (s, e) =>
             {
                 DrawCore.Action.Type = ActionTypes.Draw;
                 DrawCore.Action.DrawingType = DrawingType.Polyline;
-            };
-
-            divorceButton.Click += (s, e) => 
-            {
-                DrawCore.Divorce();
             };
 
             //void SetButtonsStyle(object sender)
@@ -337,13 +398,13 @@ namespace LevelRedactor
                 if (setLevelDataWindow.DialogResult == false)
                     return;
 
-                string levelName = setLevelDataWindow.LevelName;
+                string title = setLevelDataWindow.LevelTitle;
                 string tag = setLevelDataWindow.LevelTag;
 
-                string jsonData = Parser.Parser.ToJson(levelName, tag, DrawCore.Figures);
+                LevelData lvlData = new(DrawCore.Figures) { Title = title, Tag = tag };
 
                 LevelRepository lr = new();
-                lr.SendSetToServer(jsonData);
+                lr.SendSetToServer(lvlData);
             }
         }
         private bool IsDataCorrect()
