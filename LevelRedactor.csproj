@@ -25,6 +25,7 @@
     <None Remove="Resources\rectangle-icon.png" />
     <None Remove="Resources\removeFile-icon.png" />
     <None Remove="Resources\saveFile-icon.png" />
+    <None Remove="Resources\sendFiles-icon.png" />
     <None Remove="Resources\triangle-icon.png" />
     <None Remove="Resources\unit-icon.png" />
   </ItemGroup>
@@ -53,6 +54,7 @@
     <Resource Include="Resources\rectangle-icon.png" />
     <Resource Include="Resources\removeFile-icon.png" />
     <Resource Include="Resources\saveFile-icon.png" />
+    <Resource Include="Resources\sendFiles-icon.png" />
     <Resource Include="Resources\triangle-icon.png" />
     <Resource Include="Resources\unit-icon.png" />
   </ItemGroup>
