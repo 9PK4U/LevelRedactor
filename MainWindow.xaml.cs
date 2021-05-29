@@ -212,6 +212,8 @@ namespace LevelRedactor
             moveButton.Click += (s, e) => DrawCore.Action.Type = ActionTypes.Move;
             unitButton.Click += (s, e) => DrawCore.Action.Type = ActionTypes.Unit;
             linkButton.Click += (s, e) => DrawCore.Action.Type = ActionTypes.Link;
+
+            deleteLinkButton.Click += (s, e) => DrawCore.DeleteLink();
             divorceButton.Click += (s, e) => DrawCore.Divorce();
             incZIndexButton.Click += (s, e) => DrawCore.ChangeFigureZIndex(true);
             decZIndexButton.Click += (s, e) => DrawCore.ChangeFigureZIndex(false);

@@ -43,14 +43,17 @@
                 <Image Source="Resources/move-icon.png" Width="24"/>
             </Button>
             <Separator/>
-            <Button x:Name="unitButton" ToolTip="Объединить">
+            <Button x:Name="unitButton" ToolTip="Объединить фигуру">
                 <Image Source="Resources/unit-icon.png" Width="24"/>
             </Button>
-            <Button x:Name="divorceButton" ToolTip="Отсоединить">
+            <Button x:Name="divorceButton" ToolTip="Отсоединить примитив">
                 <Image Source="Resources/divorce-icon.png" Width="24"/>
             </Button>
-            <Button x:Name="linkButton" ToolTip="Связать">
+            <Button x:Name="linkButton" ToolTip="Связать фигуру">
                 <Image Source="Resources/link-icon.png" Width="24"/>
+            </Button>
+            <Button x:Name="deleteLinkButton" ToolTip="Отвязать фигуру">
+                <Image Source="Resources/deleteLink-icon.png" Width="24"/>
             </Button>
             <Separator/>
             <Button x:Name="incZIndexButton" ToolTip="На передний план">

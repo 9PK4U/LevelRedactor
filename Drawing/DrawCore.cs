@@ -408,6 +408,17 @@ namespace LevelRedactor.Drawing
                 Canvas.SetZIndex(CurrentFigure, CurrentFigure.ZIndex);
             }
         }
+        public void DeleteLink()
+        {
+            if (CurrentFigure is not null && CurrentFigure.MajorFigureId != 0)
+            {
+                Figure majorF = GetFigureById(CurrentFigure.MajorFigureId);
+                majorF.AnchorFiguresId.Remove(CurrentFigure.Id);
+
+                CurrentFigure.MajorFigureId = 0;
+                CurrentFigure.AnchorPoint = default;   
+            }
+        }
         public void ChangeFigureZIndex(bool isInc)
         {
             if (CurrentFigure is not null)
@@ -511,30 +522,28 @@ namespace LevelRedactor.Drawing
         }
         public void RecalcAnchorPoints()
         {
-            Figure GetById(int id)
-            {
-                foreach (Figure item in Figures)
-                {
-                    if (item.Id == id)
-                    {
-                        return item;
-                    }
-                }
-                return null;
-            }
-
             foreach (Figure dependenеtFigure in Figures)
             {
                 if (dependenеtFigure.MajorFigureId != 0)
                 {
-                    Figure majorFigure = GetById(dependenеtFigure.MajorFigureId);
+                    Figure majorFigure = GetFigureById(dependenеtFigure.MajorFigureId);
 
                     dependenеtFigure.AnchorPoint = new(majorFigure.DrawPoint.X - currentFigure.DrawPoint.X,
                                                         majorFigure.DrawPoint.Y - currentFigure.DrawPoint.Y);
                 }
             }
         }
-        
+        private Figure GetFigureById(int id)
+        {
+            foreach (Figure item in Figures)
+            {
+                if (item.Id == id)
+                {
+                    return item;
+                }
+            }
+            return null;
+        }
         public void OnPropertyChanged([CallerMemberName] string prop = "")
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
