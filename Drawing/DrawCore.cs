@@ -412,7 +412,25 @@ namespace LevelRedactor.Drawing
             {
                 Figure f = new() { ZIndex = ++drawingState.LastZIndex, DrawPoint = CurrentPrimitive.GeometryDrawing.Bounds.Location };
                 f.Primitives.Add(CurrentPrimitive);
+
+                double width = CurrentFigure.ActualWidth;
+                double height = CurrentFigure.ActualHeight;
+
                 CurrentFigure.Primitives.Remove(CurrentPrimitive);
+
+                if (CurrentPrimitive.GeometryDrawing.Bounds.Left == CurrentFigure.DrawPoint.X ||
+                    CurrentPrimitive.GeometryDrawing.Bounds.Top == CurrentFigure.DrawPoint.Y)
+                {
+                    Point point = CurrentFigure.DrawPoint;
+
+                    double differenceX = width - ((Image)CurrentFigure.Child).Source.Width;
+                    double differenceY = height - ((Image)CurrentFigure.Child).Source.Height;
+
+                    CurrentFigure.DrawPoint = new(point.X + differenceX, point.Y + differenceY);
+                    Canvas.SetLeft(CurrentFigure, CurrentFigure.DrawPoint.X);
+                    Canvas.SetTop(CurrentFigure, CurrentFigure.DrawPoint.Y);
+                }
+
                 figures.Add(f);
                 Canvas.Children.Add(f);
                 CurrentFigure = f;
@@ -437,7 +455,7 @@ namespace LevelRedactor.Drawing
         {
             if (CurrentFigure is not null)
             {
-                if (isInc && CurrentFigure.ZIndex != drawingState.LastZIndex - 1)
+                if (isInc && CurrentFigure.ZIndex != drawingState.LastZIndex)
                 {
                     Canvas.SetZIndex(CurrentFigure, ++CurrentFigure.ZIndex);
                     foreach (Figure item in Figures)
