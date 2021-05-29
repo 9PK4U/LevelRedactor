@@ -218,13 +218,13 @@ namespace LevelRedactor
             deleteCommand.Executed += DrawCore.DeleteFigure;
             CommandBindings.Add(deleteCommand);
 
-            //CommandBinding openCommand = new() { Command = ApplicationCommands.Open };
-            //deleteCommand.Executed += DrawCore.DeleteFigure;
-            //CommandBindings.Add(deleteCommand);
+            CommandBinding openCommand = new() { Command = ApplicationCommands.Open };
+            openCommand.Executed += OpenFile;
+            CommandBindings.Add(openCommand);
 
-            //CommandBinding saveCommand = new() { Command = ApplicationCommands.Save };
-            //deleteCommand.Executed += DrawCore.DeleteFigure;
-            //CommandBindings.Add(deleteCommand);
+            CommandBinding saveCommand = new() { Command = ApplicationCommands.Save };
+            saveCommand.Executed += SaveFile;
+            CommandBindings.Add(saveCommand);
         }
         private void InitButtons()
         {
