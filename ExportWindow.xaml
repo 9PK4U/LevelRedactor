@@ -8,12 +8,19 @@
         Title="ExportWindow" Height="450" Width="800">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="25"/>
+            <RowDefinition Height="30"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <ToolBar>
-            <Button>
-                <Image />
+        <ToolBar BorderBrush="Black" BorderThickness="1" ToolBarTray.IsLocked="True">
+            <Button x:Name="addFilesButton" ToolTip="Добавить файлы в список">
+                <Image Source="Resources\addFiles-icon.png"/>
+            </Button>
+            <Button x:Name="removeFileButton" ToolTip="Удалить файл из списка">
+                <Image Source="Resources\removeFile-icon.png"/>
+            </Button>
+            <Separator/>
+            <Button x:Name="sendFilesButton" ToolTip="Удалить файл из списка">
+                <Image Source="Resources\sendFiles-icon.png"/>
             </Button>
         </ToolBar>
     </Grid>

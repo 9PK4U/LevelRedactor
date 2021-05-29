@@ -280,7 +280,7 @@ namespace LevelRedactor.Drawing
                 }
                 else
                 {
-                    CurrentFigure.Primitives[0].Type = "Ломанная";
+                    CurrentFigure.Primitives[0].Type = "Ломаная";
                     CurrentFigure.Primitives[0].GeometryDrawing.Brush = Brushes.Transparent;
                     pf = new() { StartPoint = CurrentFigure.DrawPoint, IsClosed = false };
                 }

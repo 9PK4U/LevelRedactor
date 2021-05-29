@@ -37,8 +37,16 @@
                 </MenuItem>
             </MenuItem>
             <MenuItem Header="Экспорт">
-                <MenuItem Header="Открыть окно экспорта"/>
-                <MenuItem Header="Быстрый экспорт" Click="FastExport"/>
+                <MenuItem Header="Открыть окно экспорта">
+                    <MenuItem.Icon>
+                        <Image Source="Resources\openExportWindow-icon.png"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Быстрый экспорт" Click="FastExport">
+                    <MenuItem.Icon>
+                        <Image Source="Resources\fastExport-icon.png"/>
+                    </MenuItem.Icon>
+                </MenuItem>
             </MenuItem>
             <MenuItem Header="Справка"/>
         </Menu>
