@@ -65,7 +65,7 @@ namespace LevelRedactor.Drawing
                 
             }
         }
-        public ObservableCollection<Figure> Figures { get => figures; private set => figures = value; }
+        public ObservableCollection<Figure> Figures { get => figures; set => figures = value; }
 
         public DrawCore(Canvas canvas)
         {
@@ -292,6 +292,7 @@ namespace LevelRedactor.Drawing
 
                 Canvas.SetTop(CurrentFigure, point.Y);
                 Canvas.SetLeft(CurrentFigure, point.X);
+                Canvas.SetZIndex(CurrentFigure, CurrentFigure.ZIndex);
 
                 drawingState.IsDrawing = true;
             }

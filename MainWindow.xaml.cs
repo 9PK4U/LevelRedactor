@@ -65,12 +65,30 @@ namespace LevelRedactor
             fillColorCodeTextBox.KeyDown += (s, e) =>
             {
                 if (e.Key is Key.Enter)
+                {
                     SetColorFromString(fillColorCodeTextBox, fillColorPicker, fillColorCodeTextBox.Text);
+                    fillColorCodeTextBox.Focusable = false;
+                    fillColorCodeTextBox.Focus();
+                }
             };
             borderColorCodeTextBox.KeyDown += (s, e) =>
             {
                 if (e.Key is Key.Enter)
+                {
                     SetColorFromString(borderColorCodeTextBox, borderColorPicker, borderColorCodeTextBox.Text);
+                    fillColorCodeTextBox.Focusable = false;
+                    fillColorCodeTextBox.Focus();
+                }
+            };
+            figureTitleTextBox.KeyDown += (s, e) =>
+            {
+                if (e.Key is Key.Enter && String.IsNullOrWhiteSpace(figureTitleTextBox.Text) == false)
+                {
+                    DrawCore.CurrentFigure.Title = figureTitleTextBox.Text;
+                    fillColorCodeTextBox.Focusable = false;
+                    fillColorCodeTextBox.Focus();
+                }
+                
             };
 
             treeView.SelectedItemChanged += (s, e) =>
@@ -85,7 +103,9 @@ namespace LevelRedactor
                         foreach (Primitive p in f.Primitives)
                         {
                             if (p == primitive)
+                            {
                                 DrawCore.CurrentFigure = f;
+                            }
                         }
                     }
                     DrawCore.CurrentPrimitive = primitive;
@@ -266,10 +286,47 @@ namespace LevelRedactor
                 string tag = setLevelDataWindow.LevelTag;
                 string jsonString = Parser.Parser.ToJson(levelName, tag, DrawCore.Figures);
 
-                SaveFileDialog saveFileDialog = new() { Filter = "Файл уровня|*.json" };
+                SaveFileDialog saveFileDialog = new() 
+                {
+                    Filter = "Файл уровня|*.json", 
+                    Title = "Открытие уровня",
+                    InitialDirectory = "C:\\Users\\" + Environment.UserName + "\\Documents\\LevelRedactor"
+                };
                 if (saveFileDialog.ShowDialog() == true)
                 {
                     File.WriteAllText(saveFileDialog.FileName, jsonString);
+                }
+            }
+        }
+        private void OpenFile(object sender, EventArgs e)
+        {
+            OpenFileDialog openFileDialog = new()
+            {
+                Filter = "Файл уровня|*.json",
+                Title = "Открытие уровня",
+                InitialDirectory = "C:\\Users\\" + Environment.UserName + "\\Documents\\LevelRedactor",
+                Multiselect = false
+            };
+            if (openFileDialog.ShowDialog() == true)
+            {
+                try
+                {
+                    DrawCore.Figures = Parser.Parser.FromJson(File.ReadAllText(openFileDialog.FileName));
+                }
+                catch (Exception)
+                {
+                    MessageBox.Show("Данный файл не является файлом уровня", "Ошибка", MessageBoxButton.OK);
+                    return;
+                }
+
+                DrawCore.Canvas.Children.Clear();
+
+                foreach (Figure figure in DrawCore.Figures)
+                {
+                    DrawCore.Canvas.Children.Add(figure);
+                    Canvas.SetLeft(figure, figure.DrawPoint.X);
+                    Canvas.SetTop(figure, figure.DrawPoint.Y);
+                    Canvas.SetZIndex(figure, figure.ZIndex);
                 }
             }
         }
