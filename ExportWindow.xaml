@@ -5,23 +5,47 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:LevelRedactor"
         mc:Ignorable="d"
-        Title="ExportWindow" Height="450" Width="800">
+        Title="Экспорт" Height="450" Width="800">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="30"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <ToolBar BorderBrush="Black" BorderThickness="1" ToolBarTray.IsLocked="True">
-            <Button x:Name="addFilesButton" ToolTip="Добавить файлы в список">
+            <Button x:Name="addFilesButton" 
+                    Click="AddFiles"
+                    ToolTip="Добавить файлы в список">
                 <Image Source="Resources\addFiles-icon.png"/>
             </Button>
-            <Button x:Name="removeFileButton" ToolTip="Удалить файл из списка">
+            <Button x:Name="removeFileButton"
+                    Click="RemoveFile"
+                    ToolTip="Удалить файл из списка">
                 <Image Source="Resources\removeFile-icon.png"/>
             </Button>
             <Separator/>
-            <Button x:Name="sendFilesButton" ToolTip="Удалить файл из списка">
+            <Button x:Name="sendFilesButton" 
+                    Click="SendFiles"
+                    ToolTip="Удалить файл из списка">
                 <Image Source="Resources\sendFiles-icon.png"/>
             </Button>
         </ToolBar>
+        <DataGrid Grid.Row="1" x:Name="dataGrid" AutoGenerateColumns="False" MinRowHeight="30" CanUserAddRows="False">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Название" 
+                                    IsReadOnly="False"
+                                    Binding="{Binding Path=Title}"
+                                    x:Name="titleTexBox"/>
+                <DataGridTextColumn Header="Тег" 
+                                    IsReadOnly="False"
+                                    Binding="{Binding Path=Tag}"
+                                    x:Name="tagTexBox"/>
+                <DataGridTextColumn Header="Кол. примитивов" 
+                                    Binding="{Binding Path=FiguresData.Count}" 
+                                    IsReadOnly="True"/>
+                <DataGridTextColumn Header="Дата создания" 
+                                    Binding="{Binding Path=ModificationDate}"
+                                    IsReadOnly="True"/>
+            </DataGrid.Columns>
+        </DataGrid>
     </Grid>
 </Window>

@@ -37,7 +37,7 @@
                 </MenuItem>
             </MenuItem>
             <MenuItem Header="Экспорт">
-                <MenuItem Header="Открыть окно экспорта">
+                <MenuItem Header="Открыть окно экспорта" Click="OpenExportWindow">
                     <MenuItem.Icon>
                         <Image Source="Resources\openExportWindow-icon.png"/>
                     </MenuItem.Icon>

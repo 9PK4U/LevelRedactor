@@ -282,7 +282,7 @@ namespace LevelRedactor
                 if (setLevelDataWindow.DialogResult == false)
                     return;
 
-                string levelName = setLevelDataWindow.Title;
+                string levelName = setLevelDataWindow.LevelTitle;
                 string tag = setLevelDataWindow.LevelTag;
                 string jsonString = Parser.Parser.ToJson(levelName, tag, DrawCore.Figures);
 
@@ -330,6 +330,7 @@ namespace LevelRedactor
                 }
             }
         }
+        private void OpenExportWindow(object sender, RoutedEventArgs e) => new ExportWindow().Show();
         private void FastExport(object sender, EventArgs e)
         {
             if (!IsDataCorrect())

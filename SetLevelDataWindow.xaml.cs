@@ -15,11 +15,11 @@ namespace LevelRedactor
 
         public string LevelTitle
         {
-            get { return levelTitleTextBox.Text; }
+            get => levelTitleTextBox.Text; 
         }
         public string LevelTag
         {
-            get { return levelTagTextBox.Text; }
+            get => levelTagTextBox.Text; 
         }
     }
 }
