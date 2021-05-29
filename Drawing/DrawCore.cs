@@ -74,6 +74,7 @@ namespace LevelRedactor.Drawing
             Canvas.MouseLeftButtonDown += Canvas_MouseLeftButtonDown;
             Canvas.MouseMove += Canvas_MouseMove;
             Canvas.MouseLeftButtonUp += Canvas_MouseLeftButtonUp;
+            Canvas.MouseLeave += Canvas_MouseLeave;
 
             Action = new() { Type = ActionTypes.Draw, DrawingType = DrawingType.Rect, Context = new() { BorderColor = Colors.Black, FillColor = Colors.Red, BorderWidth = 2 } };
         }
@@ -192,7 +193,19 @@ namespace LevelRedactor.Drawing
                     break;
             }
         }
-        
+        private void Canvas_MouseLeave(object sender, MouseEventArgs e)
+        {
+            if (Action.Type == ActionTypes.Draw &&
+                (Action.DrawingType is DrawingType.Polygon or DrawingType.Polyline) &&
+                drawingState.IsDrawing)
+            {
+                CurrentFigure.DrawPoint = CurrentFigure.Primitives[0].GeometryDrawing.Bounds.TopLeft;
+                figures.Add(CurrentFigure);
+                CurrentPrimitive = CurrentFigure.Primitives[0];
+                Action.Type = ActionTypes.Move;
+                drawingState.IsDrawing = false;
+            }
+        }
         private void Draw(Point point, bool isBegin = true)
         { 
             if (isBegin)

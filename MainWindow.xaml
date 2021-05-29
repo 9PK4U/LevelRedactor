@@ -48,7 +48,6 @@
                     </MenuItem.Icon>
                 </MenuItem>
             </MenuItem>
-            <MenuItem Header="Справка"/>
         </Menu>
 
         <ToolBar Grid.Row="1" Grid.ColumnSpan="3" x:Name="toolBar">
