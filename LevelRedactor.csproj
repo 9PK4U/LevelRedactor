@@ -7,19 +7,25 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\addFiles-icon.png" />
     <None Remove="Resources\cursor-icon.png" />
     <None Remove="Resources\decZIndex-icon.png" />
     <None Remove="Resources\deleteLink-icon.png" />
     <None Remove="Resources\divorce-icon.png" />
     <None Remove="Resources\ellipse-icon.png" />
+    <None Remove="Resources\fastExport-icon.png" />
     <None Remove="Resources\icons8-сгруппировать-объекты-50.png" />
     <None Remove="Resources\incZIndex-icon.png" />
     <None Remove="Resources\line-icon.png" />
     <None Remove="Resources\link-icon.png" />
     <None Remove="Resources\move-icon.png" />
+    <None Remove="Resources\openExportWindow-icon.png" />
+    <None Remove="Resources\openFile-icon.png" />
     <None Remove="Resources\polygon-icon.png" />
     <None Remove="Resources\polyline-icon.png" />
     <None Remove="Resources\rectangle-icon.png" />
+    <None Remove="Resources\removeFile-icon.png" />
+    <None Remove="Resources\saveFile-icon.png" />
     <None Remove="Resources\triangle-icon.png" />
     <None Remove="Resources\unit-icon.png" />
   </ItemGroup>
@@ -30,19 +36,25 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Resources\addFiles-icon.png" />
     <Resource Include="Resources\cursor-icon.png" />
     <Resource Include="Resources\deleteLink-icon.png" />
     <Resource Include="Resources\divorce-icon.png" />
     <Resource Include="Resources\ellipse-icon.png" />
     <Resource Include="Resources\decZIndex-icon.png" />
+    <Resource Include="Resources\fastExport-icon.png" />
     <Resource Include="Resources\incZIndex-icon.png" />
     <Resource Include="Resources\icons8-сгруппировать-объекты-50.png" />
     <Resource Include="Resources\line-icon.png" />
     <Resource Include="Resources\link-icon.png" />
     <Resource Include="Resources\move-icon.png" />
+    <Resource Include="Resources\openExportWindow-icon.png" />
+    <Resource Include="Resources\openFile-icon.png" />
     <Resource Include="Resources\polygon-icon.png" />
     <Resource Include="Resources\polyline-icon.png" />
     <Resource Include="Resources\rectangle-icon.png" />
+    <Resource Include="Resources\removeFile-icon.png" />
+    <Resource Include="Resources\saveFile-icon.png" />
     <Resource Include="Resources\triangle-icon.png" />
     <Resource Include="Resources\unit-icon.png" />
   </ItemGroup>

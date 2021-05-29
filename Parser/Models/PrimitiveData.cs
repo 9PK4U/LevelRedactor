@@ -68,7 +68,7 @@ namespace LevelRedactor.Parser.Models
                 Type = primitive.Type switch
                 {
                     "Треугольник" => "Triangle",
-                    "Полигон" => "Polygon",
+                    "Многоугольник" => "Polygon",
                     "Ломаная" => "Polyline",
                     _ => ""
                 };

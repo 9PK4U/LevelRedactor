@@ -33,9 +33,20 @@ namespace LevelRedactor
             IMongoCollection<BsonDocument> collection = database.GetCollection<BsonDocument>("Maps");
             IMongoCollection<BsonDocument> collectionUpdate = database.GetCollection<BsonDocument>("Configurations");
 
-            collectionUpdate.UpdateOneAsync(
-                new BsonDocument("Update", "Levels"),
-                new BsonDocument("$set", new BsonDocument("DataLevelUpdate", DateTime.Now.ToString())));
+            var updateFilter = Builders<BsonDocument>.Filter.Eq("Update", "Levels");
+
+            var updateBson = Builders<BsonDocument>.Update.Set("DataLevelUpdate", DateTime.Now.ToString());
+
+            var updateResult = collectionUpdate.UpdateOne(updateFilter, updateBson);
+
+            if (updateResult.MatchedCount == 0)
+            {
+                var updateBSON = new BsonDocument("DataLevelUpdate", DateTime.Now.ToString())
+                {
+                    new BsonDocument("Update", "Levels")
+                };
+                collectionUpdate.InsertOne(updateBSON);
+            }
 
             string jsonData = JsonSerializer.Serialize(levelData);
             var bsonDocument = BsonSerializer.Deserialize<BsonDocument>(jsonData);
@@ -51,3 +62,4 @@ namespace LevelRedactor
         }
     }
 }
+

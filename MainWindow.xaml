@@ -25,8 +25,16 @@
 
         <Menu Grid.ColumnSpan="3">
             <MenuItem Header="Файл">
-                <MenuItem Header="Открыть"/>
-                <MenuItem Header="Сохранить" Click="SaveFile"/>
+                <MenuItem Header="Открыть">
+                    <MenuItem.Icon>
+                        <Image Source="Resources\openFile-icon.png"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Сохранить" Click="SaveFile">
+                    <MenuItem.Icon>
+                        <Image Source="Resources\saveFile-icon.png"/>
+                    </MenuItem.Icon>
+                </MenuItem>
             </MenuItem>
             <MenuItem Header="Экспорт">
                 <MenuItem Header="Открыть окно экспорта"/>
@@ -37,49 +45,49 @@
 
         <ToolBar Grid.Row="1" Grid.ColumnSpan="3" x:Name="toolBar">
             <Button x:Name="arrowButton" ToolTip="Выбор фигуры">
-                <Image Source="Resources/cursor-icon.png" Width="24"/>
+                <Image Source="Resources\cursor-icon.png" Width="24"/>
             </Button>
             <Button x:Name="moveButton" ToolTip="Переместить">
-                <Image Source="Resources/move-icon.png" Width="24"/>
+                <Image Source="Resources\move-icon.png" Width="24"/>
             </Button>
             <Separator/>
             <Button x:Name="unitButton" ToolTip="Объединить фигуру">
-                <Image Source="Resources/unit-icon.png" Width="24"/>
+                <Image Source="Resources\unit-icon.png" Width="24"/>
             </Button>
             <Button x:Name="divorceButton" ToolTip="Отсоединить примитив">
-                <Image Source="Resources/divorce-icon.png" Width="24"/>
+                <Image Source="Resources\divorce-icon.png" Width="24"/>
             </Button>
             <Button x:Name="linkButton" ToolTip="Связать фигуру">
-                <Image Source="Resources/link-icon.png" Width="24"/>
+                <Image Source="Resources\link-icon.png" Width="24"/>
             </Button>
             <Button x:Name="deleteLinkButton" ToolTip="Отвязать фигуру">
-                <Image Source="Resources/deleteLink-icon.png" Width="24"/>
+                <Image Source="Resources\deleteLink-icon.png" Width="24"/>
             </Button>
             <Separator/>
             <Button x:Name="incZIndexButton" ToolTip="На передний план">
-                <Image Source="Resources/incZIndex-icon.png" Width="24"/>
+                <Image Source="Resources\incZIndex-icon.png" Width="24"/>
             </Button>
             <Button x:Name="decZIndexButton" ToolTip="На задний план">
-                <Image Source="Resources/decZIndex-icon.png" Width="24"/>
+                <Image Source="Resources\decZIndex-icon.png" Width="24"/>
             </Button>
             <Separator/>
             <Button x:Name="ellipseButton">
-                <Image Source="Resources/ellipse-icon.png" Width="24"/>
+                <Image Source="Resources\ellipse-icon.png" Width="24"/>
             </Button>
             <Button x:Name="rectButton">
-                <Image Source="Resources/rectangle-icon.png" Width="24"/>
+                <Image Source="Resources\rectangle-icon.png" Width="24"/>
             </Button>
             <Button x:Name="triangleButton">
-                <Image Source="Resources/triangle-icon.png" Width="24"/>
+                <Image Source="Resources\triangle-icon.png" Width="24"/>
             </Button>
             <Button x:Name="lineButton">
-                <Image Source="Resources/line-icon.png" Width="24"/>
+                <Image Source="Resources\line-icon.png" Width="24"/>
             </Button>
             <Button x:Name="polylineButton">
-                <Image Source="Resources/polyline-icon.png" Width="24"/>
+                <Image Source="Resources\polyline-icon.png" Width="24"/>
             </Button>
             <Button x:Name="polygonButton">
-                <Image Source="Resources/polygon-icon.png" Width="24"/>
+                <Image Source="Resources\polygon-icon.png" Width="24"/>
             </Button>
             <Separator/>
             <Button x:Name="recalcAnchorpointsButton" Content="Пересчитать точки привязки">

@@ -12,7 +12,9 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <ToolBar>
-            <Button></Button>
+            <Button>
+                <Image />
+            </Button>
         </ToolBar>
     </Grid>
 </Window>
