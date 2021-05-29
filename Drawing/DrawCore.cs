@@ -485,8 +485,9 @@ namespace LevelRedactor.Drawing
             if (currentFigure is null)
                 return;
 
-            figures.Remove(currentFigure);
             Canvas.Children.Remove(currentFigure);
+            figures.Remove(currentFigure);
+            
 
             if (currentFigure.MajorFigureId != 0 || currentFigure.AnchorFiguresId.Count > 0)
             {
@@ -499,6 +500,7 @@ namespace LevelRedactor.Drawing
                     if (item.MajorFigureId == currentFigure.Id)
                     {
                         item.MajorFigureId = 0;
+                        item.AnchorPoint = default;
                     }
                 }
             }
@@ -529,8 +531,8 @@ namespace LevelRedactor.Drawing
                 {
                     Figure majorFigure = GetFigureById(dependenеtFigure.MajorFigureId);
 
-                    dependenеtFigure.AnchorPoint = new(majorFigure.DrawPoint.X - currentFigure.DrawPoint.X,
-                                                        majorFigure.DrawPoint.Y - currentFigure.DrawPoint.Y);
+                    dependenеtFigure.AnchorPoint = new(majorFigure.DrawPoint.X - dependenеtFigure.DrawPoint.X,
+                                                        majorFigure.DrawPoint.Y - dependenеtFigure.DrawPoint.Y);
                 }
             }
         }

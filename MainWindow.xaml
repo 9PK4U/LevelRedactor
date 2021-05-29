@@ -8,7 +8,7 @@
         WindowState="Maximized"
         ResizeMode="NoResize"
         mc:Ignorable="d"
-        Title="MainWindow" Height="768" Width="1366">
+        Title="MainWindow">
 
     <Grid x:Name="mainGrid">
         <Grid.RowDefinitions>
