@@ -1,30 +1,20 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.IO;
 using System.Windows;
-using System.Windows.Controls;
+using Microsoft.Win32;
 using System.Windows.Input;
 using System.Windows.Media;
 using LevelRedactor.Drawing;
-using Microsoft.Win32;
+using System.Windows.Controls;
 using Toolkit = Xceed.Wpf.Toolkit;
 
-using LevelRedactor.Parser;
 using LevelRedactor.Parser.Models;
 
 namespace LevelRedactor
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Логика взаимодействия для MainWindow.xaml
     /// </summary>
-
-    /*
-     * shift = move
-     * ctrl+O ctrl+S
-     * развязать
-     */
 
     public partial class MainWindow : Window
     {
@@ -36,6 +26,7 @@ namespace LevelRedactor
 
             DrawCore = new(canvas);
             DataContext = DrawCore;
+
             treeView.ItemsSource = DrawCore.Figures;
 
             InitButtons();

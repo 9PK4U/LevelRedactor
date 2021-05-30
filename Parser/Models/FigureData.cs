@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows;
-using System.Collections.Generic;
 using LevelRedactor.Drawing;
+using System.Collections.Generic;
 
 namespace LevelRedactor.Parser.Models
 {

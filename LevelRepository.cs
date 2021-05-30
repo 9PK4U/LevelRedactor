@@ -1,15 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
-using LevelRedactor.Parser.Models;
 using MongoDB.Bson;
-using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
+using System.Text.Json;
+using MongoDB.Bson.Serialization;
+using LevelRedactor.Parser.Models;
+using System.Collections.ObjectModel;
 
 namespace LevelRedactor
 {

@@ -1,6 +1,6 @@
-﻿using System.ComponentModel;
+﻿using System.Windows.Media;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Windows.Media;
 
 namespace LevelRedactor.Drawing
 {

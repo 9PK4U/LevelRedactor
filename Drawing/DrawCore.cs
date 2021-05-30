@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.ComponentModel;
+using System.Windows.Controls;
+using System.Collections.ObjectModel;
 using System.Runtime.CompilerServices;
 
 namespace LevelRedactor.Drawing
@@ -76,7 +75,17 @@ namespace LevelRedactor.Drawing
             Canvas.MouseLeftButtonUp += Canvas_MouseLeftButtonUp;
             Canvas.MouseLeave += Canvas_MouseLeave;
 
-            Action = new() { Type = ActionTypes.Draw, DrawingType = DrawingType.Rect, Context = new() { BorderColor = Colors.Black, FillColor = Colors.Red, BorderWidth = 2 } };
+            Action = new() 
+            {
+                Type = ActionTypes.Choice,
+                Context = new() 
+                { 
+                    BorderColor = Colors.White,
+                    FillColor = Colors.White,
+                    BorderWidth = 0
+                },
+                DrawingType = DrawingType.Rect
+            };
         }
 
         private void Canvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -438,7 +447,10 @@ namespace LevelRedactor.Drawing
                 Canvas.SetLeft(CurrentFigure, CurrentFigure.DrawPoint.X);
                 Canvas.SetTop(CurrentFigure, CurrentFigure.DrawPoint.Y);
                 Canvas.SetZIndex(CurrentFigure, CurrentFigure.ZIndex);
+
+                Action.Type = ActionTypes.Move;
             }
+            Action.Type = ActionTypes.Choice;
         }
         public void DeleteLink()
         {
@@ -508,7 +520,6 @@ namespace LevelRedactor.Drawing
             
             return null;
         }
-        
         private Point GetDrawPoint() => new(Canvas.GetLeft(CurrentFigure), Canvas.GetTop(CurrentFigure));
 
         public void DeleteFigure(object sender, ExecutedRoutedEventArgs e)

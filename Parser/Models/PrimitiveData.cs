@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Media;
-using System.Collections.Generic;
 using LevelRedactor.Drawing;
+using System.Collections.Generic;
 
 namespace LevelRedactor.Parser.Models
 {

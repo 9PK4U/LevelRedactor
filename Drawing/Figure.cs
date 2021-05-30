@@ -1,12 +1,12 @@
-﻿using LevelRedactor.Parser.Models;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
+﻿using System;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Media;
+using System.ComponentModel;
+using System.Windows.Controls;
+using System.Collections.Generic;
+using LevelRedactor.Parser.Models;
+using System.Collections.ObjectModel;
+using System.Runtime.CompilerServices;
 
 
 namespace LevelRedactor.Drawing
