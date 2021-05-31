@@ -40,6 +40,11 @@
                         <Image Source="Resources\saveFile-icon.png"/>
                     </MenuItem.Icon>
                 </MenuItem>
+                <MenuItem Header="Сохранить как png" Click="SaveFileAsPng">
+                    <MenuItem.Icon>
+                        <Image Source="Resources\saveAsPng-icon.png"/>
+                    </MenuItem.Icon>
+                </MenuItem>
             </MenuItem>
             <MenuItem Header="Экспорт">
                 <MenuItem Header="Открыть окно экспорта" Click="OpenExportWindow">

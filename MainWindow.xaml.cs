@@ -10,6 +10,7 @@ using Toolkit = Xceed.Wpf.Toolkit;
 
 using LevelRedactor.Parser.Models;
 using System.Diagnostics;
+using System.Windows.Media.Imaging;
 
 namespace LevelRedactor
 {
@@ -287,12 +288,42 @@ namespace LevelRedactor
                 {
                     Filter = "Файл уровня|*.json", 
                     Title = "Открытие уровня",
-                    InitialDirectory = "C:\\Users\\" + Environment.UserName + "\\Documents\\LevelRedactor"
+                    InitialDirectory = "C:\\Users\\" + Environment.UserName + "\\Documents\\LevelRedactor",
+                    FileName = levelName
                 };
                 if (saveFileDialog.ShowDialog() == true)
                 {
                     File.WriteAllText(saveFileDialog.FileName, jsonString);
                 }
+            }
+        }
+        private void SaveFileAsPng(object sender, RoutedEventArgs e)
+        {
+            double dpi = 300;
+            double scale = dpi / 96;
+
+            Size size = DrawCore.Canvas.RenderSize;
+            RenderTargetBitmap image = new RenderTargetBitmap((int)(size.Width * scale), (int)(size.Height * scale), dpi, dpi, PixelFormats.Pbgra32);
+            DrawCore.Canvas.Measure(size);
+            DrawCore.Canvas.Arrange(new Rect(size));     
+
+            image.Render(DrawCore.Canvas);
+            PngBitmapEncoder encoder = new ();
+            encoder.Frames.Add(BitmapFrame.Create(image));
+            
+            SaveFileDialog saveFileDialog = new()
+            {
+                Filter = "Рисунок уровня|*.png",
+                Title = "Открытие уровня",
+                InitialDirectory = "C:\\Users\\" + Environment.UserName + "\\Documents\\LevelRedactor",
+                FileName = "Рисунок1"
+            };
+
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                using FileStream file = File.Create(saveFileDialog.FileName);
+                encoder.Save(file);
+                //File.Create(saveFileDialog.FileName);
             }
         }
         private void OpenFile(object sender, RoutedEventArgs e)
