@@ -317,16 +317,16 @@ namespace LevelRedactor
                 }
 
                 DrawCore.Canvas.Children.Clear();
-                DrawCore.Figures.Clear();
 
                 foreach (Figure figure in DrawCore.Figures)
                 {
                     DrawCore.Canvas.Children.Add(figure);
-                    DrawCore.Figures.Add(figure);
                     Canvas.SetLeft(figure, figure.DrawPoint.X);
                     Canvas.SetTop(figure, figure.DrawPoint.Y);
                     Canvas.SetZIndex(figure, figure.ZIndex);
                 }
+
+                treeView.ItemsSource = DrawCore.Figures;
             }
         }
         private void OpenExportWindow(object sender, RoutedEventArgs e) => new ExportWindow().Show();

@@ -65,6 +65,20 @@ namespace LevelRedactor.Drawing
                 GeometryDrawing.Geometry = new PathGeometry();
                 ((PathGeometry)GeometryDrawing.Geometry).Figures.Add(pf_triangle);
             }
+            if (primitiveData.Type == "Polygon")
+            {
+                Type = "Многоугольник";
+
+                PathFigure pf = new();
+                pf.IsClosed = true;
+                pf.StartPoint = primitiveData.Points[0];
+
+                for (int i = 1; i < primitiveData.Points.Count; i++)
+                    pf.Segments.Add(new LineSegment(primitiveData.Points[i], true));
+
+                GeometryDrawing.Geometry = new PathGeometry();
+                ((PathGeometry)GeometryDrawing.Geometry).Figures.Add(pf);
+            }
         }
         public Primitive()
         { }
