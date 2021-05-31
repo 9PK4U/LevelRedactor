@@ -25,7 +25,12 @@
 
         <Menu Grid.ColumnSpan="3">
             <MenuItem Header="Файл">
-                <MenuItem Header="Открыть">
+                <MenuItem Header="Создать" Click="CreateFile">
+                    <MenuItem.Icon>
+                        <Image Source="Resources\createFile-icon.png"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Открыть" Click="OpenFile">
                     <MenuItem.Icon>
                         <Image Source="Resources\openFile-icon.png"/>
                     </MenuItem.Icon>

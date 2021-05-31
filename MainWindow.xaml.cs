@@ -9,6 +9,7 @@ using System.Windows.Controls;
 using Toolkit = Xceed.Wpf.Toolkit;
 
 using LevelRedactor.Parser.Models;
+using System.Diagnostics;
 
 namespace LevelRedactor
 {
@@ -261,8 +262,13 @@ namespace LevelRedactor
                 DrawCore.Action.DrawingType = DrawingType.Polyline;
             };
         }
-
-        private void SaveFile(object sender, EventArgs e)
+        private void CreateFile(object sender, RoutedEventArgs e)
+        {
+            var currentExecutablePath = Process.GetCurrentProcess().MainModule.FileName;
+            Process.Start(currentExecutablePath);
+            Application.Current.Shutdown();
+        }
+        private void SaveFile(object sender, RoutedEventArgs e)
         {
             if (!IsDataCorrect())
                 return;
@@ -289,7 +295,7 @@ namespace LevelRedactor
                 }
             }
         }
-        private void OpenFile(object sender, EventArgs e)
+        private void OpenFile(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openFileDialog = new()
             {
@@ -311,10 +317,12 @@ namespace LevelRedactor
                 }
 
                 DrawCore.Canvas.Children.Clear();
+                DrawCore.Figures.Clear();
 
                 foreach (Figure figure in DrawCore.Figures)
                 {
                     DrawCore.Canvas.Children.Add(figure);
+                    DrawCore.Figures.Add(figure);
                     Canvas.SetLeft(figure, figure.DrawPoint.X);
                     Canvas.SetTop(figure, figure.DrawPoint.Y);
                     Canvas.SetZIndex(figure, figure.ZIndex);
@@ -322,7 +330,7 @@ namespace LevelRedactor
             }
         }
         private void OpenExportWindow(object sender, RoutedEventArgs e) => new ExportWindow().Show();
-        private void FastExport(object sender, EventArgs e)
+        private void FastExport(object sender, RoutedEventArgs e)
         {
             if (!IsDataCorrect())
                 return;

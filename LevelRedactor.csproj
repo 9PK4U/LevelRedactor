@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <None Remove="Resources\addFiles-icon.png" />
+    <None Remove="Resources\createFile-icon.png" />
     <None Remove="Resources\cursor-icon.png" />
     <None Remove="Resources\decZIndex-icon.png" />
     <None Remove="Resources\deleteLink-icon.png" />
@@ -37,6 +38,7 @@
 
   <ItemGroup>
     <Resource Include="Resources\addFiles-icon.png" />
+    <Resource Include="Resources\createFile-icon.png" />
     <Resource Include="Resources\cursor-icon.png" />
     <Resource Include="Resources\deleteLink-icon.png" />
     <Resource Include="Resources\divorce-icon.png" />
