@@ -76,20 +76,7 @@ namespace LevelRedactor.Drawing
             AnchorFiguresId = new List<int>();
             Primitives = new ObservableCollection<Primitive>();
 
-            Primitives.CollectionChanged += (s, e) =>
-            {
-                if (Primitives.Count > 0)
-                {
-                    DrawingGroup drawingGroup = new();
-                    foreach (var primitive in Primitives)
-                    {
-                        drawingGroup.Children.Add(primitive.GeometryDrawing);
-                    }
-
-                    ((Image)Child).Source = new DrawingImage(drawingGroup);
-
-                }
-            };
+            Primitives.CollectionChanged += RedrawFigure;
         }
         public Figure(FigureData figureData) : base()
         {
@@ -97,20 +84,7 @@ namespace LevelRedactor.Drawing
             AnchorFiguresId = new List<int>();
             Primitives = new ObservableCollection<Primitive>();
 
-            Primitives.CollectionChanged += (s, e) =>
-            {
-                if (Primitives.Count > 0)
-                {
-                    DrawingGroup drawingGroup = new();
-                    foreach (var primitive in Primitives)
-                    {
-                        drawingGroup.Children.Add(primitive.GeometryDrawing);
-                    }
-
-                    ((Image)this.Child).Source = new DrawingImage(drawingGroup);
-
-                }
-            };
+            Primitives.CollectionChanged += RedrawFigure;
 
             Title = figureData.Title;
             DrawPoint = figureData.Drawpoint;
@@ -122,9 +96,22 @@ namespace LevelRedactor.Drawing
             AnchorPoint = figureData.AnchorPoint;
 
             foreach (PrimitiveData item in figureData.PrimitivesData)
-                Primitives.Add(new Primitive(item));
+                Primitives.Add(new Primitive(item, DrawPoint));
         }
 
+        private void RedrawFigure(object sender, EventArgs e)
+        {
+            if (Primitives.Count > 0)
+            {
+                DrawingGroup drawingGroup = new();
+                foreach (var primitive in Primitives)
+                {
+                    drawingGroup.Children.Add(primitive.GeometryDrawing);
+                }
+
+                ((Image)this.Child).Source = new DrawingImage(drawingGroup);
+            }
+        }
         public void OnPropertyChanged([CallerMemberName] string prop = "")
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));

@@ -39,7 +39,7 @@
                                     IsReadOnly="False"
                                     Binding="{Binding Path=Tag}"
                                     x:Name="tagTexBox"/>
-                <DataGridTextColumn Header="Кол. примитивов" 
+                <DataGridTextColumn Header="Количество фигур" 
                                     Binding="{Binding Path=FiguresData.Count}" 
                                     IsReadOnly="True"/>
                 <DataGridTextColumn Header="Дата создания" 

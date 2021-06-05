@@ -3,7 +3,7 @@ using System.Windows.Media;
 using System.ComponentModel;
 using LevelRedactor.Parser.Models;
 using System.Runtime.CompilerServices;
-
+using System.Windows;
 
 namespace LevelRedactor.Drawing
 {
@@ -26,7 +26,7 @@ namespace LevelRedactor.Drawing
         }
         public GeometryDrawing GeometryDrawing { get; set; }
 
-        public Primitive(PrimitiveData primitiveData)
+        public Primitive(PrimitiveData primitiveData, Point figureDrawPoint)
         {
             GeometryDrawing = new GeometryDrawing()
             {
@@ -39,17 +39,25 @@ namespace LevelRedactor.Drawing
             if (primitiveData.Type == "Rectangle")
             {
                 Type = "Прямоугольник";
-                GeometryDrawing.Geometry = new RectangleGeometry(primitiveData.Bounds);
+                Point LT = new (primitiveData.Bounds.Left + figureDrawPoint.X, primitiveData.Bounds.Top + figureDrawPoint.Y);
+                Point RB = new (primitiveData.Bounds.Right + figureDrawPoint.X, primitiveData.Bounds.Bottom + figureDrawPoint.Y);
+                Rect rect = new (LT, RB);
+                GeometryDrawing.Geometry = new RectangleGeometry(rect);
             }
             if (primitiveData.Type == "Ellipse")
             {
                 Type = "Овал";
-                GeometryDrawing.Geometry = new EllipseGeometry(primitiveData.Bounds);
+                Point LT = new(primitiveData.Bounds.Left + figureDrawPoint.X, primitiveData.Bounds.Top + figureDrawPoint.Y);
+                Point RB = new(primitiveData.Bounds.Right + figureDrawPoint.X, primitiveData.Bounds.Bottom + figureDrawPoint.Y);
+                Rect rect = new(LT, RB);
+                GeometryDrawing.Geometry = new EllipseGeometry(rect);
             }
             if (primitiveData.Type == "Line")
             {
                 Type = "Линия";
-                GeometryDrawing.Geometry = new LineGeometry(primitiveData.Points[0], primitiveData.Points[1]);
+                Point startPoint = new (primitiveData.Points[0].X + figureDrawPoint.X, primitiveData.Points[0].Y + figureDrawPoint.Y);
+                Point endPoint = new (primitiveData.Points[1].X + figureDrawPoint.X, primitiveData.Points[1].Y + figureDrawPoint.Y);
+                GeometryDrawing.Geometry = new LineGeometry(startPoint, endPoint);
             }
             if (primitiveData.Type == "Triangle")
             {
@@ -57,10 +65,10 @@ namespace LevelRedactor.Drawing
 
                 PathFigure pf_triangle = new();
                 pf_triangle.IsClosed = true;
-                pf_triangle.StartPoint = primitiveData.Points[0];
+                pf_triangle.StartPoint = new (primitiveData.Points[0].X + figureDrawPoint.X, primitiveData.Points[0].Y + figureDrawPoint.Y);
 
                 for (int i = 1; i < primitiveData.Points.Count; i++)
-                    pf_triangle.Segments.Add(new LineSegment(primitiveData.Points[i], true));
+                    pf_triangle.Segments.Add(new LineSegment(new (primitiveData.Points[i].X + figureDrawPoint.X, primitiveData.Points[i].Y + figureDrawPoint.Y), true));
 
                 GeometryDrawing.Geometry = new PathGeometry();
                 ((PathGeometry)GeometryDrawing.Geometry).Figures.Add(pf_triangle);
@@ -71,10 +79,24 @@ namespace LevelRedactor.Drawing
 
                 PathFigure pf = new();
                 pf.IsClosed = true;
-                pf.StartPoint = primitiveData.Points[0];
+                pf.StartPoint = new(primitiveData.Points[0].X + figureDrawPoint.X, primitiveData.Points[0].Y + figureDrawPoint.Y);
 
                 for (int i = 1; i < primitiveData.Points.Count; i++)
-                    pf.Segments.Add(new LineSegment(primitiveData.Points[i], true));
+                    pf.Segments.Add(new LineSegment(new(primitiveData.Points[i].X + figureDrawPoint.X, primitiveData.Points[i].Y + figureDrawPoint.Y), true));
+
+                GeometryDrawing.Geometry = new PathGeometry();
+                ((PathGeometry)GeometryDrawing.Geometry).Figures.Add(pf);
+            }
+            if (primitiveData.Type == "Polyline")
+            {
+                Type = "Ломаная";
+
+                PathFigure pf = new();
+                pf.IsClosed = false;
+                pf.StartPoint = new(primitiveData.Points[0].X + figureDrawPoint.X, primitiveData.Points[0].Y + figureDrawPoint.Y);
+
+                for (int i = 1; i < primitiveData.Points.Count; i++)
+                    pf.Segments.Add(new LineSegment(new(primitiveData.Points[i].X + figureDrawPoint.X, primitiveData.Points[i].Y + figureDrawPoint.Y), true));
 
                 GeometryDrawing.Geometry = new PathGeometry();
                 ((PathGeometry)GeometryDrawing.Geometry).Figures.Add(pf);
