@@ -6,8 +6,8 @@
         xmlns:local="clr-namespace:LevelRedactor"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         WindowState="Maximized"
-        ResizeMode="NoResize"
         mc:Ignorable="d"
+        Icon="Resources\LevelRedactor-icon.ico"
         Title="Редактор уровней">
 
     <Grid x:Name="mainGrid">

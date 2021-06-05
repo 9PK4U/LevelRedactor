@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:LevelRedactor"
         mc:Ignorable="d"
+        Icon="Resources\LevelRedactor-icon.ico"
         Title="Экспорт" Height="450" Width="800">
     <Grid>
         <Grid.RowDefinitions>
