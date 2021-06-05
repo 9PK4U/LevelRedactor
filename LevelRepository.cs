@@ -10,13 +10,10 @@ namespace LevelRedactor
 {
     public class LevelRepository
     {
-        private ObservableCollection<LevelData> levelsData;
         private IMongoDatabase database;
 
         public LevelRepository()
         {
-            levelsData = new();
-
             MongoClientSettings settings = new();
             settings.Server = new MongoServerAddress("176.99.11.108", 27017);
             MongoClient client = new(settings);

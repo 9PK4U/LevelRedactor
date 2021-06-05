@@ -4,6 +4,7 @@ using System.IO;
 using System.Windows;
 using LevelRedactor.Parser.Models;
 using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 
 namespace LevelRedactor
 {

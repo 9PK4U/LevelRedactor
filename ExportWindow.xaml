@@ -25,11 +25,11 @@
             <Separator/>
             <Button x:Name="sendFilesButton" 
                     Click="SendFiles"
-                    ToolTip="Удалить файл из списка">
+                    ToolTip="Загрузить файлы в БД">
                 <Image Source="Resources\sendFiles-icon.png"/>
             </Button>
         </ToolBar>
-        <DataGrid Grid.Row="1" x:Name="dataGrid" AutoGenerateColumns="False" MinRowHeight="30" CanUserAddRows="False">
+        <DataGrid Grid.Row="1" x:Name="dataGrid" AutoGenerateColumns="False" MinRowHeight="30" CanUserAddRows="False" SelectionMode="Single">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Название" 
                                     IsReadOnly="False"
