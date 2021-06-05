@@ -274,6 +274,13 @@ namespace LevelRedactor
             if (!IsDataCorrect())
                 return;
 
+
+            string path = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\LevelRedactor";
+            if (File.Exists(path) == false)
+            {
+                Directory.CreateDirectory(path);
+            }
+
             SetLevelDataWindow setLevelDataWindow = new();
             if (setLevelDataWindow.ShowDialog() == true)
             {
@@ -288,7 +295,7 @@ namespace LevelRedactor
                 {
                     Filter = "Файл уровня|*.json", 
                     Title = "Открытие уровня",
-                    InitialDirectory = "C:\\Users\\" + Environment.UserName + "\\Documents\\LevelRedactor",
+                    InitialDirectory = path,
                     FileName = levelName
                 };
                 if (saveFileDialog.ShowDialog() == true)
