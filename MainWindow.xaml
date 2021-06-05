@@ -107,6 +107,10 @@
                 <Image Source="Resources\polygon-icon.png" Width="24"/>
             </Button>
             <Separator/>
+            <Button x:Name="fillPrimitiveButton">
+                <Image Source="Resources\fill-icon.png" Width="24"/>
+            </Button>
+            <Separator/>
             <Button x:Name="recalcAnchorpointsButton" Content="Пересчитать точки привязки">
                 
             </Button>

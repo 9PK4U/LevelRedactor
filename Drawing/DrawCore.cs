@@ -112,9 +112,14 @@ namespace LevelRedactor.Drawing
                         return;
                     }
                     if ((Action.DrawingType is DrawingType.Polygon or DrawingType.Polyline) && drawingState.IsDrawing == false)
+                    {
                         DrawPoly(currentPoint);
+                    }
                     else
+                    {
                         DrawPoly(currentPoint, false);
+                    }
+
                     break;
                 case ActionTypes.Move:
                     if ( (CurrentFigure = GetFigure(currentPoint)) is not null && (CurrentPrimitive = GetPrimitive(currentPoint)) is not null)
@@ -135,7 +140,17 @@ namespace LevelRedactor.Drawing
                     break;
                 case ActionTypes.Choice:
                     if ((CurrentFigure = GetFigure(currentPoint)) != null)
+                    {
                         CurrentPrimitive = GetPrimitive(currentPoint) ?? CurrentPrimitive;
+                    }
+                    break;
+                case ActionTypes.Fill:
+                    SolidColorBrush newColor = new(Action.Context.FillColor);
+                    if ((CurrentFigure = GetFigure(currentPoint)) is not null && (CurrentPrimitive = GetPrimitive(currentPoint)) is not null)
+                    {
+                        CurrentPrimitive.GeometryDrawing.Brush = newColor;
+                        Action.Context.FillColor = newColor.Color;
+                    }
                     break;
                 default:
                     break;

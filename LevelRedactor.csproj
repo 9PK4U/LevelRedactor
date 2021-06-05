@@ -15,6 +15,7 @@
     <None Remove="Resources\divorce-icon.png" />
     <None Remove="Resources\ellipse-icon.png" />
     <None Remove="Resources\fastExport-icon.png" />
+    <None Remove="Resources\fill-icon.png" />
     <None Remove="Resources\incZIndex-icon.png" />
     <None Remove="Resources\line-icon.png" />
     <None Remove="Resources\link-icon.png" />
@@ -46,6 +47,7 @@
     <Resource Include="Resources\ellipse-icon.png" />
     <Resource Include="Resources\decZIndex-icon.png" />
     <Resource Include="Resources\fastExport-icon.png" />
+    <Resource Include="Resources\fill-icon.png" />
     <Resource Include="Resources\incZIndex-icon.png" />
     <Resource Include="Resources\line-icon.png" />
     <Resource Include="Resources\link-icon.png" />

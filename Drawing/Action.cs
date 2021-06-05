@@ -9,7 +9,8 @@ namespace LevelRedactor.Drawing
         Move,
         Unit,
         Link,
-        Choice
+        Choice,
+        Fill
     }
     public enum DrawingType
     {

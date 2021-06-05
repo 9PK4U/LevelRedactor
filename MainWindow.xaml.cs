@@ -83,7 +83,6 @@ namespace LevelRedactor
                 }
                 
             };
-
             treeView.SelectedItemChanged += (s, e) =>
             {
                 if (treeView.SelectedItem is Figure figure)
@@ -225,6 +224,7 @@ namespace LevelRedactor
             moveButton.Click += (s, e) => DrawCore.Action.Type = ActionTypes.Move;
             unitButton.Click += (s, e) => DrawCore.Action.Type = ActionTypes.Unit;
             linkButton.Click += (s, e) => DrawCore.Action.Type = ActionTypes.Link;
+            fillPrimitiveButton.Click += (s, e) => DrawCore.Action.Type = ActionTypes.Fill;
 
             deleteLinkButton.Click += (s, e) => DrawCore.DeleteLink();
             divorceButton.Click += (s, e) => DrawCore.Divorce();
