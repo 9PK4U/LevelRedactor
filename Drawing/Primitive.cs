@@ -1,9 +1,9 @@
 ﻿using System;
+using System.Windows;
 using System.Windows.Media;
 using System.ComponentModel;
 using LevelRedactor.Parser.Models;
 using System.Runtime.CompilerServices;
-using System.Windows;
 
 namespace LevelRedactor.Drawing
 {
@@ -105,13 +105,9 @@ namespace LevelRedactor.Drawing
         public Primitive()
         { }
 
-        public void OnPropertyChanged([CallerMemberName] string prop = "")
-        {
+        public void OnPropertyChanged([CallerMemberName] string prop = "") =>
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
-        }
-        public object Clone()
-        {
-            return new Primitive() { Type = Type, GeometryDrawing = GeometryDrawing.Clone(), Angle = Angle };
-        }
+        public object Clone() => 
+            new Primitive() { Type = Type, GeometryDrawing = GeometryDrawing.Clone(), Angle = Angle };
     }
 }

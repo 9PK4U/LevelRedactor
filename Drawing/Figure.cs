@@ -112,10 +112,8 @@ namespace LevelRedactor.Drawing
                 ((Image)this.Child).Source = new DrawingImage(drawingGroup);
             }
         }
-        public void OnPropertyChanged([CallerMemberName] string prop = "")
-        {
+        public void OnPropertyChanged([CallerMemberName] string prop = "") =>
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
-        }
         public object Clone()
         {
             Figure newFigure = new()

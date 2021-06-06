@@ -1,9 +1,8 @@
-﻿using System;
-using System.Text.Json;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Text.Json;
 using LevelRedactor.Drawing;
+using System.Collections.Generic;
 using LevelRedactor.Parser.Models;
+using System.Collections.ObjectModel;
 
 namespace LevelRedactor.Parser
 {
@@ -28,9 +27,6 @@ namespace LevelRedactor.Parser
 
             return figures;
         }
-        public static LevelData GetLevelData(string data)
-        {
-            return JsonSerializer.Deserialize<LevelData>(data);
-        }
+        public static LevelData GetLevelData(string data) => JsonSerializer.Deserialize<LevelData>(data);
     }
 }
